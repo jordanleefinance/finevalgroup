@@ -5,9 +5,9 @@ from requests.auth import HTTPBasicAuth
 from openpyxl import Workbook
 
 # Configuration
-CLIENT_ID = 'ABxiy7uRFMAodckBhQH7Civ7khF4z9WDRVKwKs7YKLVJUHIZZt'
+CLIENT_ID = 'AB11725981363YVFLMqg7tO2OpRZyk1x2aQ60WUPAL1aA7OdKY'
 CLIENT_SECRET = 'jA88goCfvChG2HBf5oHTrOhSLu1CTMd6FqL2IoAG'
-ACCESS_TOKEN = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..S30MQ9oC4FLfQhrrXNxrPg.w2MBqCXnNVg7_P4uBwVxnEa1cK3BLvCax5R3attuJNm8Ein-p-MUCgBkdcp9CO7BIBNtNHqdHtqHDQ_h685S7-_G-72u7qng_O-vEVhZqeSBXfxamI2TUnmqyKgSVvTln47ei1d9JtSAVB2soEr0OugvM1yvuIdhOgopvOln4v-mvcejiz7IlX3Wg3jXo6k1mGjPhf5FYRxyFpko1jZy7XtIMqHd18uKeY9Xop-SPtOn4cg6BFJFOqeZ_bdcCjcCQ6iqISgTaeuoAJUtDIs_cjEeQSKjOBnvepKpJcm9znFuJv1o3OVNBFYjRyvvKtPN29MYjcz1zd9aNC5yxMkpJjeqs3d51vkEsdAxX26y--4PQyCoBAtqSmDGZzixuXUi_tNfmsYMWeZxN5jh2x3mAx46-YMbx0WvS4AaK-p2L3BIG6ruMFYvyYyJWQa5kGN0TqaOJ5yMZKNPZaNIBm0xx7SyEyKTojwUpjNKS8uj3JtCdhGs9MQqs5MfEecXE0Ljh8hO9KwTuEiPXeYDfxkgG8pezxAxOrCCdvMi8TbXZx-Y29WyEpykA27RyuCNhgFK3EmTqoZDJfnrmJ4NdN3b887EkOkYO1M0nPHZtWZcdAmMyHSQcHMJt6fr_vkNayYpKitr1qaaa7SIxd605Wg_aW8YTo3R5GmYVo5v43G93hGfGWl23Scon8u-4z0AiAZt1TqX-rxTOL7PnjiZlWA6tR8Uh3SPJnrcGtpWqvIKA_6pPC3aHvWkiOLCjfnTvG9V.ev8sUL8eQVE0iJLoi6upww'
+ACCESS_TOKEN = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..GUa4KlR8L9x4w1C-gWK6pg.ykzy1m1U8qKgpTj6e4u9lOFA2cAVK2KFidKyDeqApx1E-SyeTZOGPU3cW1NTU1ZgHpQEBK7xOYS2HY8LjVW7U7b-7l6PsAaWrsSvSu_nNe7zHmSuP4OV6B8mmDL1HZlWC0R9HQDjenCvAo51TERQ0vTvcCkPOyPrrZKVQKGC9bVNHlBvDZeYyCM7Y7yt3bn_3WOxr4t_7F1vL6HmjOMAtdiZIEzzzAYfSP4ePEMqwiuAeXPYMEj5yWJpQ8pTHczyg5zJ3JMZHOdT97GIPcb9c93Wq7Kr9qCMaiJmh5hLeGEHAuAORDXL1yv9bi4wE6BTLQx0hvc5FNHndEfBFHq8lOYDbYAvNZDXAFsywoy1TDPk_uwRwxPD_zq0RC-kDmqzE0ft8r6PInGrv8Sb79RtnXTskeMKLd6NtchSNaDQyX9A-njhlOop4wFdj3GOp0WRu2_DqcOPNbRC8xuYrEq_yjfJbQp3LM-3pWao-lJ_rNWipP_f6uGvR6rUndKlIUG3Q8wAN8XwkouCCofQZxWmhrkLUrraGhio-L5JbrZ__O73772kY3gChGey2f1KaYjc4_k_RWSKaGu6Tm-Z1PGvbCj4VEYg67QnpDqzDsYnGuNApexJJ-8wzOw2XWWj3r3PqqVNDf1c6zxhP5shc1GoQ449HnAPZ4CosExivJSoFfP4vhysp7SnvPcO7t6jbNSiXiiXD_2mDbwpivrNQhL-C9Tzhk8IcGduJptePZt8vZWxQ75zMmFR04LfedSWfXDk.vqSqN8ktfQsYK0oYVDYqgg'
 COMPANY_ID = '9341452910276277'
 
 # QuickBooks API endpoints
@@ -37,15 +37,34 @@ if response.status_code == 200:
     
     # Prepare a list to hold the data
     data = []
+    '''def parse_balance_sheet(data):
+        balance_sheet = data.get('Rows', {}).get('Row', [])
+        headers = []
+        values = []
+
+        for row in balance_sheet:
+            cells = row.get('Cells', [])
+            if not headers:
+                headers = [cell.get('value') for cell in cells]
+            else:
+                values.append([cell.get('value') for cell in cells])
+
+        return headers, values'''
+    
 
     for row in rows:
-        if 'Summary' in row:
+
+        '''if 'Summary' in row:
             data.append({
                 'Label': row['Summary']['ColData'][0]['value'],
                 'Amount': row['Summary']['ColData'][1]['value']
-            })
+            })'''
+
+        # Append the extracted data to the list
+        data.append(row)
 
     # Convert the list to a DataFrame
+    #df = pd.DataFrame(values, columns=headers)
     df = pd.DataFrame(data)
 
     # Save the DataFrame to an Excel file

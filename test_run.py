@@ -1,4 +1,3 @@
-pip install requests
 import requests
 
 curl -X GET 'https://sandbox-quickbooks.api.intuit.com/v3/company/9341452910276277/companyinfo/9341452910276277?minorversion=12' \
