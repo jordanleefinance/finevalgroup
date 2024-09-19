@@ -6,10 +6,10 @@ from openpyxl import Workbook
 from datetime import datetime, timedelta
 
 # Configuration
-CLIENT_ID = 'ABMwyfUQxen1pOUKa4o7WxE2BGw2tfok9CDlAdvo8PjQivJKWc'
-CLIENT_SECRET = 'oxU8wJYTywbZuFpYiEHADQbt77EFi26hK32yVdUa'
-ACCESS_TOKEN = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..HBoKcuTO8z3xLZZ2nHvgqw.FQHPBQagFSRtP0peDsiH5lwKhW2xyXKcfNsj3_Ghvk9VVikkxT20uBNXZP4CedAbWf8qk7AZdQa9p85GMd5iD1HQQVeBD8AruOZzKeZADRU8Av23QSSoXoRXSuvqHVmG1n4AQZOfMUfuF9CwIwJBq3re0pfIi0NrQ_y7z8EGip-KXS33UfVs02wlxXLfCLQhIRTIRdJ2QGBiUAx5-5sHibDuQ2_MlxN3qQw7uTpMN537peqT9F9NLStBnVud9Yq8b5w7T5AdpHlL_2EQJ6jN3mOX64efynIhvwDxdwpyhXgWXDVsMQPFhuGoP7EFmtdXmW-ijegSltkqQJqkcrYoO4J_ZksWF9I7SNWm6udEcbdAt9M4rf6fcTyhJyxfbeHHPfCdcudB_77lRMdrnDmX6w8QwCNixKx1Czqh3PJRC8zO6NEdJbo6Q4Jtdabt6-nt5T4rz6ngi4nRchUKRlZg0V8-nxg8x6gFkSpC_h-GpGXCHUcAvh5BRN-wKbAJHnXBMmt_UwND02LBrcQSddG5w-prfSAVWxsQq-vCnn5roByP0PQLGpJv0dYbJLtxVLSqWudHxBZyFDWRIvtVKofsV4X8WxUfTFQ5h8YMXC1-4GYXGFfoqhnyx7Io44UuUM96u9taasG5NpmGxZwSk3pss1eqaWw1eEwCNTLZYN96JO83e52LDLQfNas5mIk2mfbUr_19hw_TYwCiq21wdCl-asgXIMN_Qd7LczxHqBTqe0Q.aL0mj-rYpdW4xf72kOxt1Q'
-COMPANY_ID = '9341452948993561'
+CLIENT_ID = 'AB11726786975lvudmQnXCxAgQF7EnFS4WbzdaksGHYbko2za7'
+CLIENT_SECRET = 'jA88goCfvChG2HBf5oHTrOhSLu1CTMd6FqL2IoAG'
+ACCESS_TOKEN = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..rkEY08pYZ_HHaIuPdoXFxw.iTD-HiysAiBfzVTNYbdWpWgNS0FEvxOB0DXhGm4xAlCBcw-cLU_5i0hOy79HsNsp6uLiEZAP2f8nSnn98behrzpAPppc6a7IZk-8LEduLH38OqimgNvUXhUMxbE93089dn9AH9QxceLo5xmTB_TQUXf8TWupFcSzQMGGBY57bdssSLp79jUmg0N_j_8vH8BUuCbnkasnklruWwUGrrQ9vvTV5XZZK_ojhR6TafzdDaANvaP8JkBz_hMaIS2HUhx9BJT-2RJhyZyX4X6TU8zdSe2plKN1kj97t-CPpQ4ZntEy2q2vnK41M_0Sj-WpHpLQ5sPyeuKY3ou2iDtakwzuNfY8_o7gJiDJFEwDyd0mO4ySutC4hW4qUir7safgl1mF4dj9G3ENebTc6r55up0H6w_Dv7BFdShJbu9wgwxSaPALTvAYir4lL0OFjUoTNjLhVDKlx_RUL-UIm1PNE53e0o7TuxIui374vgzza6sgFIYT9DqFQIWVLo31w6gmoyuEj9IsOgmFi-lzXfaLkXhQlQGOQdPhqHrurQLywr0TVTaL6H0j-foAAdMTULJACk81TLLIcnfIudhWmftps4S0vfh_b0CCS1WT0SG0bJgZ8fMyofcdXVlrMqAgU4NKmf9pbVSUh270IRhMVfJom0dtwbBBfl34Dp4wimaNKQ57W_M0ysg5OAKN1Pv6wA0RMnQh6HLhd2ZET8061ltGxgakUAErnu1BHzCBIWCiF_vCL_PqRMLMcAUMPBFDQsKl_O3q.Goks6ftG_pTs_qR6tQ67hQ'
+COMPANY_ID = '9341452910276277'
 
 # QuickBooks API endpoints
 BASE_URL = 'https://sandbox-quickbooks.api.intuit.com/v3/company'
@@ -115,6 +115,7 @@ for month in months:
 df = pd.DataFrame(data)
 print(df)
 
+# Convert 'Value' to numeric (remove commas and convert to float)
 df['Value'] = pd.to_numeric(df['Value'].str.replace(',', ''), errors='coerce')
 
 # Check for any NaN values in 'Value' column
@@ -132,9 +133,9 @@ df_pivot = df_grouped.pivot(index='Account Name', columns='Month', values='Value
 df_pivot.fillna(0, inplace=True)
 
 # Save to Excel
-df_pivot.to_excel('pivoted_balance_sheet.xlsx')
-df.to_excel('balance_sheet_time.xlsx', index=False)
+df_pivot.to_excel('pivoted_statements.xlsx')
+
 
 # Display the pivoted DataFrame
-print(df_pivot)
+#print(df_pivot)
 print("Data saved to Excel files.")
