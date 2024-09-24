@@ -3,6 +3,8 @@ import win32com.client
 import os
 from datetime import datetime, timedelta
 
+import os
+
 def remove_password(file_path, password, new_file_path):
     # Initialize Excel application
     excel = win32com.client.Dispatch("Excel.Application")
@@ -12,21 +14,27 @@ def remove_password(file_path, password, new_file_path):
         # Open the workbook with the password
         workbook = excel.Workbooks.Open(file_path, Password=password)
 
+        # Check if the directory for the new file exists
+        new_file_dir = os.path.dirname(new_file_path)
+        if not os.path.exists(new_file_dir):
+            raise FileNotFoundError(f"The directory '{new_file_dir}' does not exist.")
+
         # Save a new copy without password protection
-        workbook.SaveAs(new_file_path, Password="", FileFormat=51)  # 51 for .xlsx
+        workbook.SaveAs(new_file_path, Password='', FileFormat=51)  # 51 for .xlsx
         print(f"Password removed successfully. New file saved as: {new_file_path}")
 
     except Exception as e:
         print(f"An error occurred while removing password: {e}")
 
     finally:
+        # Close the workbook and quit Excel
         try:
             workbook.Close(SaveChanges=True)
-        except: 
-            pass
+        except Exception as e:
+            print(f"An error occurred while closing the workbook: {e}")
         excel.Quit()
 
-def find_date_in_row(file_path, sheet_name='Monthly Detail', search_row='3:3', target_date=datetime.today().replace(day=1)-timedelta(days=1)):
+def find_date_in_row(file_path, sheet_name='Monthly Detail', search_row='4:4', target_date=datetime.today().replace(day=1)-timedelta(days=1)):
     # Initialize Excel application
     excel = win32com.client.Dispatch("Excel.Application")
     excel.Visible = False  # Set to True if you want to see Excel
@@ -46,7 +54,10 @@ def find_date_in_row(file_path, sheet_name='Monthly Detail', search_row='3:3', t
 
     # Iterate through the specified row
     found = False
-    for cell in sheet.Range(search_row):
+    print(target_date)
+    for cell in sheet.UsedRange(search_row):
+        cell.Value = datetime.strptime(cell.Value, '%m/%d/%Y')
+        print(cell.value)
         if isinstance(cell.Value, datetime):
             if cell.Value.date() == target_date.date():  # Compare only dates
                 column_letter = cell.Address[0]  # Get the address to extract column letter
@@ -77,7 +88,7 @@ def copy_formatting_and_formulas(file_path, target_date):
         # Copy the source range
         source_range.Copy(target_range)
         pre_source_range.Copy(source_range)
-        pre_source_range.Borders("1:150").LineStyle=0
+        #pre_source_range.Borders("Z1:Z150").LineStyle=0
 
         # Save changes
         workbook.Save()
