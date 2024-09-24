@@ -2,7 +2,6 @@ import openpyxl
 import win32com.client
 import os
 
-
 def remove_password(file_path, password, new_file_path):
     # Initialize Excel application
     excel = win32com.client.Dispatch("Excel.Application")
@@ -13,16 +12,17 @@ def remove_password(file_path, password, new_file_path):
         workbook = excel.Workbooks.Open(file_path, Password=password)
 
         # Save a new copy without password protection
-        workbook.SaveAs(new_file_path, Password="", FileFormat=51)
+        workbook.SaveAs(new_file_path, Password="", FileFormat=51)  # 51 for .xlsx
         print(f"Password removed successfully. New file saved as: {new_file_path}")
 
     except Exception as e:
         print(f"An error occurred while removing password: {e}")
 
     finally:
-        # Open the workbook with the password
-        workbook = excel.Workbooks.Open(file_path, Password=password)
-        workbook.Close(SaveChanges=False)
+        try:
+            workbook.Close(SaveChanges=False)
+        except: 
+            pass
         excel.Quit()
 
 def copy_formatting_and_formulas(file_path):
@@ -40,23 +40,26 @@ def copy_formatting_and_formulas(file_path):
             source_cell = f'{source_column}{row}'
             target_cell = f'{target_column}{row}'
 
-            # Copy the value and formula
-            if sheet[source_cell].data_type == 'f':  # If the cell has a formula
-                sheet[target_cell].value = f'={source_cell}'
-            else:
-                sheet[target_cell].value = sheet[source_cell].value
+            # Ensure source cell exists
+            if source_cell in sheet:
+                # Copy the value and formula
+                if sheet[source_cell].data_type == 'f':  # If the cell has a formula
+                    sheet[target_cell].value = f'={source_cell}'
+                else:
+                    sheet[target_cell].value = sheet[source_cell].value
 
-            # Copy formatting
-            if sheet[source_cell].has_style:
-                sheet[target_cell].font = sheet[source_cell].font
-                sheet[target_cell].border = sheet[source_cell].border
-                sheet[target_cell].fill = sheet[source_cell].fill
-                sheet[target_cell].number_format = sheet[source_cell].number_format
-                sheet[target_cell].protection = sheet[source_cell].protection
-                sheet[target_cell].alignment = sheet[source_cell].alignment
+                # Copy formatting if the source cell has style
+                if sheet[source_cell].has_style:
+                    sheet[target_cell].font = sheet[source_cell].font
+                    sheet[target_cell].border = sheet[source_cell].border
+                    sheet[target_cell].fill = sheet[source_cell].fill
+                    sheet[target_cell].number_format = sheet[source_cell].number_format
+                    sheet[target_cell].protection = sheet[source_cell].protection
+                    sheet[target_cell].alignment = sheet[source_cell].alignment
 
         # Save the workbook
         workbook.save(file_path)
+        workbook.close()
 
         print("Formatting and formulas copied successfully from AA to AB.")
 
