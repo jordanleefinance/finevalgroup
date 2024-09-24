@@ -13,8 +13,7 @@ def remove_password(file_path, password, new_file_path):
         workbook = excel.Workbooks.Open(file_path, Password=password)
 
         # Save a new copy without password protection
-        workbook.SaveAs(new_file_path, Password="")
-        workbook.Close(SaveChanges=True)
+        workbook.SaveAs(new_file_path, Password="", FileFormat=51)
         print(f"Password removed successfully. New file saved as: {new_file_path}")
 
     except Exception as e:
@@ -71,7 +70,7 @@ if __name__ == "__main__":
     password = "sb!"
     
     # Path to save the new unprotected Excel file
-    new_file_path = r'SandBox_FFM_Unprotected.xlsx'  # Update this with your desired path
+    new_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\SandBox_FFM_Unprotected.xlsx'  # Update this with your desired path
 
     # Check if the original file exists
     if not os.path.exists(original_file_path):
