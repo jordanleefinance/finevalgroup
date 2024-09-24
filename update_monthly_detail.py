@@ -1,6 +1,7 @@
 import openpyxl
 import win32com.client
 import os
+from datetime import datetime, timedelta
 
 def remove_password(file_path, password, new_file_path):
     # Initialize Excel application
@@ -20,51 +21,79 @@ def remove_password(file_path, password, new_file_path):
 
     finally:
         try:
-            workbook.Close(SaveChanges=False)
+            workbook.Close(SaveChanges=True)
         except: 
             pass
         excel.Quit()
 
-def copy_formatting_and_formulas(file_path):
+def find_date_in_row(file_path, sheet_name='Monthly Detail', search_row='3:3', target_date=datetime.today().replace(day=1)-timedelta(days=1)):
+    # Initialize Excel application
+    excel = win32com.client.Dispatch("Excel.Application")
+    excel.Visible = False  # Set to True if you want to see Excel
+    # Open the workbook
+    workbook = excel.Workbooks.Open(file_path)
+        
+    # Access the 'Monthly Detail' sheet
+    sheet = workbook.Sheets(sheet_name)
+
+    # Set target_date to the last day of the previous month if not provided
+    if target_date is None:
+        target_date = datetime.today().replace(day=1) - timedelta(days=1)
+
+    # Convert target date to a datetime object
+    if isinstance(target_date, str):
+        target_date = datetime.strptime(target_date, '%m/%d/%Y')  # Adjust format as needed
+
+    # Iterate through the specified row
+    found = False
+    for cell in sheet.Range(search_row):
+        if isinstance(cell.Value, datetime):
+            if cell.Value.date() == target_date.date():  # Compare only dates
+                column_letter = cell.Address[0]  # Get the address to extract column letter
+                print(f"Found date {target_date.date()} in column {column_letter}. Values in this column:")
+                found = True
+                return column_letter
+
+    if not found:
+        print(f"Date {target_date.date()} not found in row {search_row}.")
+
+def copy_formatting_and_formulas(file_path, target_date):
+    # Initialize Excel application
+    excel = win32com.client.Dispatch("Excel.Application")
+    excel.Visible = False  # Set to True if you want to see Excel
+    print(find_date_in_row(file_path, target_date=target_date))
     try:
-        # Load the workbook and select the sheet
-        workbook = openpyxl.load_workbook(file_path)
-        sheet = workbook['Monthly Detail']
+        # Open the workbook
+        workbook = excel.Workbooks.Open(file_path)
+        
+        # Access the 'Monthly Detail' sheet
+        sheet = workbook.Sheets('Monthly Detail')
 
-        # Define the columns
-        source_column = 'AA'
-        target_column = 'AB'
+        # Copy formatting and formulas from column AA to AB
+        pre_source_range = sheet.Range("Z:Z")
+        source_range = sheet.Range("AA:AA")
+        target_range = sheet.Range("AB:AB")
+        
+        # Copy the source range
+        source_range.Copy(target_range)
+        pre_source_range.Copy(source_range)
+        pre_source_range.Borders("1:150").LineStyle=0
 
-        # Copy formatting and formulas from AA to AB
-        for row in range(1, sheet.max_row + 1):
-            source_cell = f'{source_column}{row}'
-            target_cell = f'{target_column}{row}'
-
-            # Ensure source cell exists
-            if source_cell in sheet:
-                # Copy the value and formula
-                if sheet[source_cell].data_type == 'f':  # If the cell has a formula
-                    sheet[target_cell].value = f'={source_cell}'
-                else:
-                    sheet[target_cell].value = sheet[source_cell].value
-
-                # Copy formatting if the source cell has style
-                if sheet[source_cell].has_style:
-                    sheet[target_cell].font = sheet[source_cell].font
-                    sheet[target_cell].border = sheet[source_cell].border
-                    sheet[target_cell].fill = sheet[source_cell].fill
-                    sheet[target_cell].number_format = sheet[source_cell].number_format
-                    sheet[target_cell].protection = sheet[source_cell].protection
-                    sheet[target_cell].alignment = sheet[source_cell].alignment
-
-        # Save the workbook
-        workbook.save(file_path)
-        workbook.close()
-
-        print("Formatting and formulas copied successfully from AA to AB.")
-
+        # Save changes
+        workbook.Save()
     except Exception as e:
-        print(f"An error occurred while copying formatting: {e}")
+            print(f"An error occurred while copying formatting: {e}")
+
+    finally:
+        # Open the workbook
+        workbook = excel.Workbooks.Open(file_path)
+
+        # Close the workbook and quit Excel
+        workbook.Close(SaveChanges=True)
+        excel.Quit()
+
+    print("Formatting and formulas copied successfully from AA to AB.")
+        
 
 # Usage
 if __name__ == "__main__":
@@ -82,4 +111,4 @@ if __name__ == "__main__":
         remove_password(original_file_path, password, new_file_path)
 
         # Proceed to copy formatting and formulas if the password removal was successful
-        copy_formatting_and_formulas(new_file_path)
+        copy_formatting_and_formulas(new_file_path, '08/31/2024')
