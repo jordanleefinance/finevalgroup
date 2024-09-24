@@ -152,7 +152,7 @@ excel.Visible = False  # Set to True if you want to see Excel
 
 try:
     # Open the workbook
-    workbook = excel.Workbooks.Open(file_path, Password=password)
+    workbook = excel.Workbooks.Open('finevalgroup\SandBox_FFM_Updated.xlsx', Password=password)
     
     # Access the 'Monthly Detail' sheet
     sheet = workbook.Sheets('Monthly Detail')
