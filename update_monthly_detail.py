@@ -18,10 +18,17 @@ def remove_password(file_path, password, new_file_path):
         new_file_dir = os.path.dirname(new_file_path)
         if not os.path.exists(new_file_dir):
             raise FileNotFoundError(f"The directory '{new_file_dir}' does not exist.")
+        
+        if os.path.exists(new_file_path)==False:
 
-        # Save a new copy without password protection
-        workbook.SaveAs(new_file_path, Password='', FileFormat=51)  # 51 for .xlsx
-        print(f"Password removed successfully. New file saved as: {new_file_path}")
+            # Save a new copy without password protection
+            workbook.SaveAs(new_file_path, Password='', FileFormat=51)  # 51 for .xlsx
+            print(f"Password removed successfully. New file saved as: {new_file_path}")
+        else:
+            # Save a new copy without password protection
+            workbook.Save(new_file_path)  # 51 for .xlsx
+            print(f"Password removed successfully. New file saved as: {new_file_path}")
+
 
     except Exception as e:
         print(f"An error occurred while removing password: {e}")
@@ -54,16 +61,26 @@ def find_date_in_row(file_path, sheet_name='Monthly Detail', search_row='4:4', t
 
     # Iterate through the specified row
     found = False
-    print(target_date)
-    for cell in sheet.UsedRange(search_row):
-        cell.Value = datetime.strptime(cell.Value, '%m/%d/%Y')
-        print(cell.value)
+    #print(target_date)
+    for cell in sheet.UsedRange.Range(search_row):
+        #cell.Value = datetime.strptime(cell.Value, '%m/%d/%Y')
+        #print(cell.value)
         if isinstance(cell.Value, datetime):
             if cell.Value.date() == target_date.date():  # Compare only dates
-                column_letter = cell.Address[0]  # Get the address to extract column letter
+                column_letter = cell.Address.split('$')[1]  # Get the address to extract column letter
+                if len(column_letter)>1:
+                    pre_column_letter = column_letter[0] + chr(ord(column_letter[1]) - 1)
+                    post_column_letter = column_letter[0] + chr(ord(column_letter[1]) + 1)
+
+                # Handle special case for column 'AA'
+                if column_letter == 'AA':
+                    pre_column_letter = 'Z'
+                else:
+                    pre_column_letter = chr(ord(column_letter) - 1)
+                    post_column_letter = chr(ord(column_letter) + 1)
                 print(f"Found date {target_date.date()} in column {column_letter}. Values in this column:")
                 found = True
-                return column_letter
+                return f"{pre_column_letter}:{pre_column_letter}", f"{column_letter}:{column_letter}", f"{post_column_letter}:{post_column_letter}"
 
     if not found:
         print(f"Date {target_date.date()} not found in row {search_row}.")
@@ -73,6 +90,9 @@ def copy_formatting_and_formulas(file_path, target_date):
     excel = win32com.client.Dispatch("Excel.Application")
     excel.Visible = False  # Set to True if you want to see Excel
     print(find_date_in_row(file_path, target_date=target_date))
+    pre_source = str(find_date_in_row(file_path, target_date=target_date)[0])
+    source = str(find_date_in_row(file_path, target_date=target_date)[1])
+    target = str(find_date_in_row(file_path, target_date=target_date)[2])
     try:
         # Open the workbook
         workbook = excel.Workbooks.Open(file_path)
@@ -81,9 +101,9 @@ def copy_formatting_and_formulas(file_path, target_date):
         sheet = workbook.Sheets('Monthly Detail')
 
         # Copy formatting and formulas from column AA to AB
-        pre_source_range = sheet.Range("Z:Z")
-        source_range = sheet.Range("AA:AA")
-        target_range = sheet.Range("AB:AB")
+        pre_source_range = sheet.UsedRange.Range(pre_source)
+        source_range = sheet.UsedRange.Range(source)
+        target_range = sheet.UsedRange.Range(target)
         
         # Copy the source range
         source_range.Copy(target_range)
