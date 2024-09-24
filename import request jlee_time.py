@@ -2,13 +2,13 @@ import requests
 import pandas as pd
 from requests_oauthlib import OAuth2Session
 from requests.auth import HTTPBasicAuth
-from openpyxl import Workbook
+import openpyxl
 from datetime import datetime, timedelta
 
 # Configuration
-CLIENT_ID = 'AB11726939094pDI6Hfmsb0BdxKQxrrwtBrzqZQp2yUcg8Mn1L'
+CLIENT_ID = 'AB11727204156Fg7jAcpAEhGthr4Ixiv9X8P3uKHbUtPhboxVn'
 CLIENT_SECRET = 'jA88goCfvChG2HBf5oHTrOhSLu1CTMd6FqL2IoAG'
-ACCESS_TOKEN = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..d45qCHgqinMv_EZPDhYsjw.XrJzgoBECel4j5sotG7FSoaZOVdm1tLxZs4FGcMaiRT4xisG_OJ-5UI0RdCheI1DWxtbDIM2g1F1LqOUDtqNQAH_IAweEI5sGvVI-PqjxUTV8pkiYdfkeEcL7lSBC0lUdFTWxPenxL3B_1Z7sHHr_jqE_u1Qo18Z-SeJ_pfhUyfgTPhPznSDEESNYRJr-nOC4iX5xooqj26k2FqlgJ5IElKZ8fFZENyDyFnXrLGW3tJ-W8RN9_d7mKHn6r78dykqXPNCFQ4QuycTMkeGB0FrXjVNgk6BmRwjMS5wFKwdDXXiU1W28Ma24GI7Mpl8nUd2pSavEXb3LMCQ1vfAuQz7bzHXSJpSWd1Equtig0g8lszsgweizHTl4FG6ss13kaJqx7xfMUeNU6mgniF4wFDbbCKgNTj8lSNgGMCqee45Zz_QpDFMgOFNuJOUZ93QkQpYoLk_UMg-E9FwwS8ZbUO05sj5SgNzDZ5n2kq2kVZJWPkCxEjPrXqo4iG4dNtkEOTGqr6INseIhzWaF6lEz3QZWT1PzkfAYZc69IiaxuGOlHMInl73kKCOgf-ab-HrU3-HtdU4DNsDHyFEFXi1NPJmHr820z_1a20w2a55TJn16QOUROANXRkCbdlwpVB03tm-ZVbF6rSSfkkE6qPlT0uaoIHV4c1pLMzpO3a4ye0_zSOYRW9AZc7A0y2hwmpicaM1jCUyitzDzDO1n_AFwe85MdmSwSwpzz_PAFM4xTMq8qjHYZc7npU2Xg3c1IfMN6sr.o44y2TTbs84ju5Vw2ZdJzQ'
+ACCESS_TOKEN = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..dDdcI75dxCW3aFvA07E-dA.6g0ZYSbh8J-_v6QJXxCSoIKgJPGwr76hfT-TIsDxn08AAvDtNtvcoM96Mn1D_jt01KmTFr82uhuxvwzfOGgNZh7_Ia6B-r7xgV6gaTsWDU8DNrRfzfrzF1VVSELov7gNIwZG_aleSi5R44k-4mD1-r3J7oPr-ohDXDJ2T9Kprtynho-lyeCD3q2Pmkaad5UnH_0UqBcNfP1vb2kldrdlkf_obo02NSVttL-gVVZ7KCM85RddvqJyVrzdKObP6q6gX1aP6O04em6j-U0Rtt7zxC5yEEKQ8HSScUG-kmsUvbWlMmqxHvHuB7V1rmphXva0pPMF4mpgKhDaad_viWMK9eGbOwOL88pb80baMXuf9D2UuEi0yVnoLOUv-eqezLi-5dtsoFN4_ef-WMwtu40Z4H5bnxpbtBVU6bk7CTVQrtbhaCDzk6lmAwwFc9Hb5lbwcwZCX5OKmF6WQjTjZp6GKU5hQPNERaKqgGsEhIaNlJvAhqpjbtz7XOwuk58XCTYpqfSpVUpNunuOeQEBbDo6h_18_W2ZvqTifQKDwlDJlPnYo1GT-x83qUZLbaGjO4TpSwl-Tj4VS5AkqF24Eh0ZvM9VavKnp1G8hV7DIyD_cAm7zvgWLDUqH3K4sItSi0djIhV9KIconqWirUhDOw5sjoGrNtYA1V6zdf_a35M1BBKKyJGxkzj2qksVmOamOyERVer2m9DPAcCiGpYHLzMhsmZjfnCJcg9TURLyNgvaUjs.08-nypFQBfsZ2CFIxVbs_g'
 COMPANY_ID = '9341452910276277'
 
 # QuickBooks API endpoints
@@ -113,7 +113,7 @@ for month in months:
 
 # Convert the list to a DataFrame
 df = pd.DataFrame(data)
-print(df)
+#print(df)
 
 # Convert 'Value' to numeric (remove commas and convert to float)
 df['Value'] = pd.to_numeric(df['Value'].str.replace(',', ''), errors='coerce')
@@ -139,3 +139,40 @@ df_pivot.to_excel('pivoted_statements.xlsx')
 # Display the pivoted DataFrame
 #print(df_pivot)
 print("Data saved to Excel files.")
+
+import win32com.client
+
+# Path to the Excel file
+file_path = r'SandBox_FFM_Updated.xlsx'  # Update this with the correct path
+password = "sb!"
+
+# Initialize Excel application
+excel = win32com.client.Dispatch("Excel.Application")
+excel.Visible = False  # Set to True if you want to see Excel
+
+try:
+    # Open the workbook
+    workbook = excel.Workbooks.Open(file_path, Password=password)
+    
+    # Access the 'Monthly Detail' sheet
+    sheet = workbook.Sheets('Monthly Detail')
+
+    # Copy formatting and formulas from column AA to AB
+    source_range = sheet.Range("AA:AA")
+    target_range = sheet.Range("AB:AB")
+    
+    # Copy the source range
+    source_range.Copy(target_range)
+
+    # Save changes
+    workbook.Save()
+
+finally:
+    # Open the workbook
+    workbook = excel.Workbooks.Open(file_path, Password=password)
+
+    # Close the workbook and quit Excel
+    workbook.Close(SaveChanges=True)
+    excel.Quit()
+
+print("Formatting and formulas copied successfully from AA to AB.")
