@@ -140,39 +140,3 @@ df_pivot.to_excel('pivoted_statements.xlsx')
 #print(df_pivot)
 print("Data saved to Excel files.")
 
-import win32com.client
-
-# Path to the Excel file
-file_path = r'SandBox_FFM_Updated.xlsx'  # Update this with the correct path
-password = "sb!"
-
-# Initialize Excel application
-excel = win32com.client.Dispatch("Excel.Application")
-excel.Visible = False  # Set to True if you want to see Excel
-
-try:
-    # Open the workbook
-    workbook = excel.Workbooks.Open('finevalgroup\SandBox_FFM_Updated.xlsx', Password=password)
-    
-    # Access the 'Monthly Detail' sheet
-    sheet = workbook.Sheets('Monthly Detail')
-
-    # Copy formatting and formulas from column AA to AB
-    source_range = sheet.Range("AA:AA")
-    target_range = sheet.Range("AB:AB")
-    
-    # Copy the source range
-    source_range.Copy(target_range)
-
-    # Save changes
-    workbook.Save()
-
-finally:
-    # Open the workbook
-    workbook = excel.Workbooks.Open(file_path, Password=password)
-
-    # Close the workbook and quit Excel
-    workbook.Close(SaveChanges=True)
-    excel.Quit()
-
-print("Formatting and formulas copied successfully from AA to AB.")
