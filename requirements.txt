@@ -12,6 +12,6 @@ openpyxl~=3.1.5
 altair~=4.2.0
 numpy>=1.21.6
 scikit-learn
-Pillow~=9.0.1
+Pillow~=11.0.0
 numpy_financial~=1.0.0
 xlsxwriter
