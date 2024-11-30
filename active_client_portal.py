@@ -112,6 +112,14 @@ def send_email(recipient_email, temp_password):
         print(f"Error sending email: {e}")
 
 # Streamlit Sidebar for Authentication
+st.sidebar.markdown(
+    """<a href=""https://www.jmmgrp.com/images/JMM%20Logo.png"">
+    <img src="data:image/png;base64,{}" width="25">
+    </a>""".format(
+        base64.b64encode(open("JMM Logo.png", "rb").read()).decode()
+    ),
+    unsafe_allow_html=True,
+)
 st.sidebar.title("Client Authentication")
 
 # Phase 1: Collect Client ID
