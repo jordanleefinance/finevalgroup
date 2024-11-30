@@ -5,6 +5,10 @@ from openpyxl import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
 from datetime import datetime, timedelta
 import plotly.express as px
+import numpy as np
+
+# Correct usage
+bool_type = np.bool_
 
 # Set most recently fully reviewed month-end close time period
 today = datetime.today()
