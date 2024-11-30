@@ -1,6 +1,15 @@
 import openpyxl
 from openpyxl.utils import get_column_letter
 
+'''st.sidebar.markdown(
+    """<a href=""https://www.jmmgrp.com/"">
+    <img src="data:image/png;base64,{}" width="25">
+    </a>""".format(
+        base64.b64encode(open("JMM Logo.png", "rb").read()).decode()
+    ),
+    unsafe_allow_html=True,
+)'''
+
 # Load the workbook and select the 'Budget to Actual' tab
 file_path = 'SandBox_FFM.xlsx'  # Update this path to your file location
 wb = openpyxl.load_workbook(file_path)

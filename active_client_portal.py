@@ -6,6 +6,12 @@ from openpyxl.utils.exceptions import InvalidFileException
 from datetime import datetime, timedelta
 import plotly.express as px
 import numpy as np
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import random
+import string
+import base64
 
 # Correct usage
 bool_type = np.bool_
@@ -72,15 +78,11 @@ kpi_index = {
 }
 
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import random
-import string
+
 
 # Function to generate a temporary password
-def generate_temp_password(length=8):
-    chars = string.ascii_letters + string.digits + string.punctuation
+def generate_temp_password(length=5):
+    chars = string.ascii_letters + string.digits #+ string.punctuation
     return ''.join(random.choice(chars) for _ in range(length))
 
 # Function to send the email
@@ -112,14 +114,7 @@ def send_email(recipient_email, temp_password):
         print(f"Error sending email: {e}")
 
 # Streamlit Sidebar for Authentication
-st.sidebar.markdown(
-    """<a href=""https://www.jmmgrp.com/images/JMM%20Logo.png"">
-    <img src="data:image/png;base64,{}" width="25">
-    </a>""".format(
-        base64.b64encode(open("JMM Logo.png", "rb").read()).decode()
-    ),
-    unsafe_allow_html=True,
-)
+
 st.sidebar.title("Client Authentication")
 
 # Phase 1: Collect Client ID
