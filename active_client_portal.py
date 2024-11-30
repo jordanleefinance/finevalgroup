@@ -38,7 +38,7 @@ valid_client_names = {
 }
 valid_client_emails = {
     "EI": "jordanlee2017@gmail.com",
-    "AL": "jordanlee2017@gmail.com",
+    "AL": "felicia@alhomebuilders.com",
     "DLI": "jordanlee2017@gmail.com",
     "DMSF": "jordanlee2017@gmail.com",
     "IA": "jordanlee2017@gmail.com",
