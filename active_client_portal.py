@@ -115,7 +115,7 @@ def send_email(recipient_email, temp_password):
 st.sidebar.title("Client Authentication")
 
 # Phase 1: Collect Client ID
-client_id = st.sidebar.text_input("Client ID", "DLI")
+client_id = st.sidebar.text_input("Client ID", "")
 
 if st.sidebar.button("Request Temporary Password"):
     if client_id in valid_clients:
@@ -128,7 +128,7 @@ if st.sidebar.button("Request Temporary Password"):
 
 # Phase 2: Validate Passwords
 if 'temp_password' in st.session_state:
-    client_password = st.sidebar.text_input("Client Password", "DLI2024!", type="password")
+    client_password = st.sidebar.text_input("Client Password", "", type="password")
     encrypted_password = st.sidebar.text_input("Encrypted Passowrd (Sent to "f"{valid_client_emails[client_id]})", "test", type="password")
 
     if st.sidebar.button("Submit"):
