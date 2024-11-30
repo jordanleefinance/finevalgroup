@@ -32,6 +32,14 @@ valid_client_names = {
     "IA": "Intentionally Amazing",
     "LB": "La Bete LLC"
 }
+valid_client_emails = {
+    "EI": "jordanlee2017@gmail.com",
+    "AL": "jordanlee2017@gmail.com",
+    "DLI": "jordanlee2017@gmail.com",
+    "DMSF": "jordanlee2017@gmail.com",
+    "IA": "jordanlee2017@gmail.com",
+    "LB": "jordanlee2017@gmail.com"
+}
 
 # Assign each client with an industry based on business type
 valid_client_business_type = {
@@ -50,6 +58,7 @@ industry_index = {
     "Educational Services": ["Education Institution", "Tutor Services"],
     "Fitness": ["Fitness Trainer"]
 }
+
 kpi_index = {
     "Other Services": ["# of Successful Appointments", "# of Active Clients", "# of Recurring Client Base", "# of Anticipated Appointments", "# of Anticipated Clients", "Appt Multiplier",
     "Realized / Effective Bill Rate", "Productivity Utilization", "Implied Tenure", "Average Revenue", "MRR", "LTV/CAC"],
@@ -58,32 +67,82 @@ kpi_index = {
     "Fitness": ["# of Bookings", "# of Recurring Clients", "Total Bill Hours", "Realized / Effective Bill Rate", "Average Revenue/Client", "MRR", "LTC/CAC"]
 }
 
-# Sidebar form for client authentication
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import random
+import string
+
+# Function to generate a temporary password
+def generate_temp_password(length=8):
+    chars = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choice(chars) for _ in range(length))
+
+# Function to send the email
+def send_email(recipient_email, temp_password):
+    sender_email = "jmmgroupva@gmail.com"  # Replace with your email
+    sender_password = "ltiw leaq pbxq pqqu"        # Replace with your email password or app password
+
+    subject = "JMM Client Portal Temporary Password"
+    body = f"Hello,\n\nYour temporary password is: {temp_password}\n\nPlease reach out to jmmgroupva@gmail.com if there are any issues."
+
+    # Create email message
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+
+    # Attach the body text
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        # Connect to the server
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:  # Use the appropriate SMTP server and port
+            server.starttls()  # Upgrade the connection to secure
+            server.login(sender_email, sender_password)  # Login
+            server.send_message(msg)  # Send the email
+            print("Email sent successfully!")
+
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+# Streamlit Sidebar for Authentication
 st.sidebar.title("Client Authentication")
+
+# Phase 1: Collect Client ID
 client_id = st.sidebar.text_input("Client ID", "DLI")
-client_password = st.sidebar.text_input("Client Password", "DLI2024!", type="password")
 
-# Function to check authentication
-def authenticate(client_id, client_password):
-    if client_id not in valid_clients:
-        return "Client ID not found"
-    elif valid_clients[client_id] != client_password:
-        return "Incorrect password"
+if st.sidebar.button("Request Temporary Password"):
+    if client_id in valid_clients:
+        temp_password = generate_temp_password()
+        st.session_state['temp_password'] = temp_password
+        send_email(valid_client_emails[client_id], temp_password)
+        st.sidebar.success("Temporary password sent to your email!")
     else:
-        return "Authenticated"
+        st.sidebar.error("Client ID not found.")
 
-# Handle authentication attempts
-if st.sidebar.button("Submit"):
-    auth_status = authenticate(client_id, client_password)
-    if auth_status == "Authenticated":
-        st.sidebar.success(f"{valid_client_names[client_id]} successfully logged in!")
-        st.session_state['authenticated'] = True
-    else:
-        st.sidebar.error(auth_status)
+# Phase 2: Validate Passwords
+if 'temp_password' in st.session_state:
+    client_password = st.sidebar.text_input("Client Password", "DLI2024!", type="password")
+    encrypted_password = st.sidebar.text_input("Encrypted Passowrd (Sent to "f"{valid_client_emails[client_id]})", "test", type="password")
 
-# If authenticated, proceed to search for the file
-if 'authenticated' in st.session_state and st.session_state['authenticated']:
-    st.title(f"Welcome, {valid_client_names[client_id]}!", anchor='center')
+    if st.sidebar.button("Submit"):
+        if client_id not in valid_clients:
+            st.sidebar.error("Client ID not found.")
+        elif valid_clients[client_id] != client_password:
+            st.sidebar.error("Incorrect client password.")
+        elif st.session_state['temp_password'] != encrypted_password:
+            st.sidebar.error("Incorrect temporary password.")
+        else:
+            st.sidebar.success(f"{client_id} authenticated successfully!")
+            st.session_state['authenticated'] = True
+
+# Post-authentication content
+if st.session_state.get('authenticated'):
+    st.title(f"Welcome, {valid_client_names[client_id]}!")
+    # Proceed with additional actions like loading data, etc.
+
     # Search for the financial forecast model using the Client ID and password
     folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
@@ -216,12 +275,13 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
             
 
             st.write(f"Filtered Data from {formatted_start_date} to {formatted_end_date}:")
-            st.dataframe(earnings_df)
 
             # Plot the data
             if not earnings_df.empty:
                 stacked_data = earnings_df.transpose().reset_index()
                 stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
+                earnings_df = earnings_df.style.format("${:,.2f}")
+                st.dataframe(earnings_df)
                 fig = px.bar(
                     stacked_data,
                     x="index",
@@ -247,12 +307,12 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
             cash_df.index.name = "Legend"
             
             st.write(f"Filtered Data from {formatted_start_date} to {formatted_end_date}:")
-            st.dataframe(cash_df)
-
             # Plot the data
             if not cash_df.empty:
                 stacked_data = cash_df.transpose().reset_index()
                 stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
+                cash_df = cash_df.style.format("${:,.2f}")
+                st.dataframe(cash_df)
                 fig = px.area(
                     stacked_data,
                     x="index",
