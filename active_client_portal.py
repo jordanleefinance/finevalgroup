@@ -20,30 +20,42 @@ valid_clients = {
     "EI": "EI2024!",
     "AL": "AL2024!",
     "DLI": "DLI2024!",
+    "DMSF": "DMSF2024!",
+    "IA": "IA2024!",
+    "LB": "LB2024!"
 }
 valid_client_names = {
     "EI": "Est Institute",
     "AL": "A&L Home Builders",
     "DLI": "Legacy Tattoo",
+    "DMSF": "Darnerien McCants Sports & Fitness",
+    "IA": "Intentionally Amazing",
+    "LB": "La Bete LLC"
 }
 
 # Assign each client with an industry based on business type
 valid_client_business_type = {
     "EI": "Education Institution",
     "AL": "Home Builder",
-    "DLI": "Barbershop"
+    "DLI": "Tattoo Parlor",
+    "DMSF": "Fitness Trainer",
+    "IA": "Nail Salon",
+    "LB": "Barbershop"
 }
 
 # Set up dictionary for industry key performance indicators (Industry: ["KPI #1", "KPI #2", "etc."])
 industry_index = {
     "Other Services": ["Barbershop", "Nail Salon", "Tattoo Parlor"],
     "Construction": ["Home Builder", "Contracting Services"],
-    "Educational Services": ["Education Institution", "Tutor Services"]
+    "Educational Services": ["Education Institution", "Tutor Services"],
+    "Fitness": ["Fitness Trainer"]
 }
 kpi_index = {
-    "Other Services": ["Seasonaility","# of Successful Appointments", "# of Active Clients", "# of Recurring Client Base"],
-    "Construction": ["Total Contract Bookings", "Subcontractors (Contractor Services) as a % of Revenue"],
-    "Educational Services": ["# of Students", "Net New Students", "# of Sessions", "Total Billed Hours"]
+    "Other Services": ["# of Successful Appointments", "# of Active Clients", "# of Recurring Client Base", "# of Anticipated Appointments", "# of Anticipated Clients", "Appt Multiplier",
+    "Realized / Effective Bill Rate", "Productivity Utilization", "Implied Tenure", "Average Revenue", "MRR", "LTV/CAC"],
+    "Construction": ["Total Contract Bookings"],
+    "Educational Services": ["# of Students", "Net New Students", "# of Sessions", "Total Billed Hours", "Realized / Effective Bill Rate", "Implied Tenure", "Average Revenue", "LTV/CAC"],
+    "Fitness": ["# of Bookings", "# of Recurring Clients", "Total Bill Hours", "Realized / Effective Bill Rate", "Average Revenue/Client", "MRR", "LTC/CAC"]
 }
 
 # Sidebar form for client authentication
@@ -119,6 +131,7 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
 
             # Create a DataFrame, optionally setting the first row as headers
             df2 = pd.DataFrame(data)
+            print(df2.iloc[:15, 26:30])
             # df2.columns = df.iloc[0]  # Set the first row as header
             df2 = df[1:]  # Remove the first row from the data
 
@@ -129,7 +142,7 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
 
             st.sidebar.subheader("Set date range to review")
             selected_review_start_date = st.sidebar.date_input("Select a start date to review:", value=datetime(previous_month.year, 1, 1))
-            selected_review_end_date = st.sidebar.date_input("Select a end date to review:", value=previous_month)
+            selected_review_end_date = st.sidebar.date_input("Select a end date to review:", value=datetime(2024, 12, 31)) #previous_month)
        
 
             if selected_review_start_date.month > 9:
@@ -146,27 +159,31 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
 
             # Create and add review date range
             review_cols = []
-            tok = 0
+            tok = -1
 
             for col in df.columns:
+                print(col)
                 if col == "Unnamed: 1" or col == "Unnamed: 2" or col == 2022:
                     continue
                 elif col == 2023 or col == 2024 or col == 2025 or col == 2026 or col == 2027 or col == 2028 or col == 2029 or col == 2030:
-                    col = 2023 + tok
-                    tok += 1
-                    df.rename(columns={col: datetime.strptime((str(col) + ".12"), "%Y.%m")}, inplace=True)
-                    print(datetime.strptime((str(col) + ".12"), "%Y.%m"))
+                    new_col = col + tok
+                    # tok += 1
+
+                    new_date = datetime.strptime((str(new_col) + ".12"), "%Y.%m")
+                    df.rename(columns={col: new_date.strftime("%Y.%m")}, inplace=True)
+                    col = new_date
+                    
                     # review_cols.append(col)
                 elif datetime.strptime(review_start_date, "%Y.%m") <= datetime.strptime(col, "%Y.%m") <= datetime.strptime(review_end_date, "%Y.%m"):
                     review_cols.append(col)
                 else:
                     col = datetime.strptime(str(col), "%Y.%m")
 
+                print(col)
+            #print(df[datetime.strptime(("2024.12"), "%Y.%m")])
             review_start_date_column = df[review_start_date]
             review_end_date_column = df[review_end_date]
-            print(review_end_date_column)
 
-            print(df[review_cols])
             # print(df.columns)
 
 
@@ -187,13 +204,6 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
             cfff_row.set_index('Unnamed: 2', inplace=True)
             cash_row = df.loc[df['Unnamed: 2'] == 'Ending Balance']
             cash_row.set_index('Unnamed: 2', inplace=True)
-
-            kpi_dfs = []
-            for kpi in client_kpis:
-                kpi_row = df.loc[df[2022] == kpi]
-                kpi_row.set_index(2022, inplace=True)
-                kpi_dfs.append(kpi_row)
-            # print(kpi_dfs)
             
             
             # Create the filtered earnings DataFrame
@@ -257,6 +267,13 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
 
             st.subheader("Key Performance Indicator Overview")
 
+            kpi_dfs = []
+            for kpi in client_kpis:
+                kpi_row = df.loc[df[2022] == kpi]
+                kpi_row.set_index(2022, inplace=True)
+                kpi_dfs.append(kpi_row)
+            print(kpi_dfs)
+
             # Create the filtered KPIs DataFrame
             kpi_df = pd.concat(
                 kpi_dfs,
@@ -287,14 +304,12 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
             st.sidebar.subheader("Set date range to adjust the metrics below")
             selected_adjusted_start_date = st.sidebar.date_input("Select the start date of the date range to adjust:", value=first_day_next_month)
             selected_adjusted_end_date = st.sidebar.date_input("Select the end date of the date range to adjust:", value=next_month)
+
             st.sidebar.subheader("Key Performance Indicators")
             
             tik = 0
             for i in client_kpis:
-                print(kpi_dfs[tik])
-                kpi_toggle = st.sidebar.number_input(i, kpi_dfs[tik][review_end_date])
-                
-                tik += 1
+                kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
 
             if st.sidebar.button("Adjust"):
                 # Generate a stacked column graph for Income, Gross Profit, Net Income
