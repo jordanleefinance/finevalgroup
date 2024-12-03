@@ -148,6 +148,8 @@ if 'temp_password' in st.session_state:
 # Post-authentication content
 if st.session_state.get('authenticated'):
     st.title(f"Welcome, {valid_client_names[client_id]}!")
+    st.write("Current working directory:", os.getcwd())
+    st.write("Files in current directory:", os.listdir(os.getcwd()))
     # Proceed with additional actions like loading data, etc.
 
     # Search for the financial forecast model using the Client ID and password
