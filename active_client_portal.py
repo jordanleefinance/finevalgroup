@@ -373,7 +373,7 @@ if st.session_state.get('authenticated'):
             
             tik = 0
             for i in client_kpis:
-                kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, datetime.strptime(review_end_date, "%Y.%m")])
+                kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
 
             if st.sidebar.button("Adjust"):
                 # Generate a stacked column graph for Income, Gross Profit, Net Income
