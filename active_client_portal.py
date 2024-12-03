@@ -156,7 +156,7 @@ if st.session_state.get('authenticated'):
     folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\AL_FFM.xlsx"
     folder_url = "https://1drv.ms/f/s!Ahn0H0cOCaQDgfMc1LO9pk6gggFmpg?e=co7UgN"
     file_url = "https://1drv.ms/x/s!Ahn0H0cOCaQDgfF3mqy41XTP7azu4Q?e=OAzxtu"
-    virtual_folder_path = "C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\.venv"
+    virtual_folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\.venv"
     '''try:
         # Fetch the file from OneDrive Shared Folder
         response = requests.get(folder_url)
