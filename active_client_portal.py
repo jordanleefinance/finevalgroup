@@ -235,8 +235,10 @@ if st.session_state.get('authenticated'):
                     new_date = str(new_col) + ".12"
                     df.rename(columns={col: new_date}, inplace=True)
                     col = new_date
-                    review_cols.append(col)
-                    
+                    if datetime.strptime(review_start_date, "%Y.%m") <= datetime.strptime(col, "%Y.%m") <= datetime.strptime(review_end_date, "%Y.%m"):
+                        review_cols.append(col)
+                    else:
+                        continue
                     # review_cols.append(col)
                 elif datetime.strptime(review_start_date, "%Y.%m") <= datetime.strptime(col, "%Y.%m") <= datetime.strptime(review_end_date, "%Y.%m"):
                     review_cols.append(col)
