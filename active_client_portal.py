@@ -12,6 +12,7 @@ from email.mime.multipart import MIMEMultipart
 import random
 import string
 from io import BytesIO
+import requests
 
 # Correct usage
 bool_type = np.bool_
@@ -76,9 +77,6 @@ kpi_index = {
     "Educational Services": ["# of Students", "Net New Students", "# of Sessions", "Total Billed Hours", "Realized / Effective Bill Rate", "Implied Tenure", "Average Revenue", "LTV/CAC"],
     "Fitness": ["# of Bookings", "# of Recurring Clients", "Total Bill Hours", "Realized / Effective Bill Rate", "Average Revenue/Client", "MRR", "LTC/CAC"]
 }
-
-
-
 
 # Function to generate a temporary password
 def generate_temp_password(length=5):
@@ -153,18 +151,22 @@ if st.session_state.get('authenticated'):
     # Proceed with additional actions like loading data, etc.
 
     # Search for the financial forecast model using the Client ID and password
-    folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\AL_FFM.xlsx"
+    folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"
     folder_url = "https://1drv.ms/f/s!Ahn0H0cOCaQDgfMc1LO9pk6gggFmpg?e=co7UgN"
     file_url = "https://1drv.ms/x/s!Ahn0H0cOCaQDgfF3mqy41XTP7azu4Q?e=OAzxtu"
     virtual_folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\.venv"
-    '''try:
+    try:
         # Fetch the file from OneDrive Shared Folder
-        response = requests.get(folder_url)
+        response = requests.get(file_url)
         response.raise_for_statue()
         excel_file = BytesIO(response.content)
-        print(excel_file)
+        new_workbook = pd.ExcelFile(excel_file)
+        df = new_workbook.parse("Monthly Detail")
+            # Remove the first column from the header
+        df = df.iloc[:, :-1].set_axis(df.columns[1:], axis=1)
+        st.dataframe(df)
     except InvalidFileException:
-            st.error("Unable to open the file. The file may be corrupt or inaccessible.")'''
+            st.error("Unable to open the file. The file may be corrupt or inaccessible.")
 
     folder_path = os.path.join(os.getcwd(), "finevalgroup")  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
