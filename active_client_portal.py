@@ -270,6 +270,9 @@ if st.session_state.get('authenticated'):
             cfff_row.set_index('Unnamed: 2', inplace=True)
             cash_row = df.loc[df['Unnamed: 2'] == 'Ending Balance']
             cash_row.set_index('Unnamed: 2', inplace=True)
+
+            mrr_row = df.loc[df['Unnamed: 2'] == 'MRR']
+            mrr_row.set_index('Unnamed: 2', inplace=True)
             
             formatted_cols = []
             # Create the filtered earnings DataFrame
@@ -313,7 +316,7 @@ if st.session_state.get('authenticated'):
 
             # Create the filtered cash position DataFrame
             cash_df = pd.concat(
-                [cffo_row, cffi_row, cfff_row, cash_row],
+                [mrr_row, cffo_row, cffi_row, cfff_row, cash_row],
                 axis=0
             )[review_cols]
             
@@ -343,9 +346,12 @@ if st.session_state.get('authenticated'):
 
             kpi_dfs = []
             for kpi in client_kpis:
-                kpi_row = df.loc[df[2022] == kpi]
-                kpi_row.set_index(2022, inplace=True)
-                kpi_dfs.append(kpi_row)
+                if kpi != "MRR":
+                    kpi_row = df.loc[df[2022] == kpi]
+                    kpi_row.set_index(2022, inplace=True)
+                    kpi_dfs.append(kpi_row)
+                else:
+                    continue
             #Sprint(kpi_dfs)
 
             # Create the filtered KPIs DataFrame
@@ -353,7 +359,7 @@ if st.session_state.get('authenticated'):
                 kpi_dfs,
                 axis=0
             )[review_cols]
-            
+
             st.sidebar.subheader("Set date range to adjust the metrics below")
             selected_adjusted_start_date = st.sidebar.date_input("Select the start date of the date range to adjust:", value=first_day_next_month)
             selected_adjusted_end_date = st.sidebar.date_input("Select the end date of the date range to adjust:", value=next_month)
