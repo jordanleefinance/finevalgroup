@@ -155,6 +155,8 @@ if st.session_state.get('authenticated'):
     folder_url = "https://1drv.ms/f/s!Ahn0H0cOCaQDgfMc1LO9pk6gggFmpg?e=co7UgN"
     file_url = "https://1drv.ms/x/s!Ahn0H0cOCaQDgfF3mqy41XTP7azu4Q?e=OAzxtu"
     virtual_folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\.venv"
+    st.write("Current working directory:", os.getcwd(), ".venv")
+    st.write("Files in current directory:", os.listdir(os.getcwd()))
 
     folder_path = os.path.join(os.getcwd(), ".venv")  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
