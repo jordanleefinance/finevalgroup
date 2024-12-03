@@ -336,11 +336,14 @@ if st.session_state.get('authenticated'):
 
                 # Adding bar chart for CFFO, CFFI, CFFF, and Cash Ending Balance
                 for metric in ["Cash Flow From Operations", "Cash Flow From Investing", "Cash Flow From Financing", "Ending Balance"]:
-                    fig.add_trace(go.Bar(
-                        x=cash_df.columns,
-                        y=cash_df.loc[metric],
-                        name=metric
-                    ))
+                    if metric in cash_df.index:
+                        fig.add_trace(go.Bar(
+                            x=cash_df.columns,
+                            y=cash_df.loc[metric],
+                            name=metric
+                        ))
+                    else:
+                        st.warning(f"{metric} not found in cash data. Check spelling or index structure.")
 
                 # Adding MRR as a line chart with a secondary y-axis
                 fig.add_trace(go.Scatter(
