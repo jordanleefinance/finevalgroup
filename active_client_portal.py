@@ -129,7 +129,7 @@ if st.sidebar.button("Request Temporary Password"):
 
 # Phase 2: Validate Passwords
 if 'temp_password' in st.session_state:
-    client_password = st.sidebar.text_input("Client Password", "DLI", type="password")
+    client_password = st.sidebar.text_input("Client Password", "AL2024!", type="password")
     encrypted_password = st.sidebar.text_input("Encrypted Passowrd (Sent to "f"{valid_client_emails[client_id]})", "test", type="password")
 
     if st.sidebar.button("Submit"):
@@ -146,15 +146,13 @@ if 'temp_password' in st.session_state:
 # Post-authentication content
 if st.session_state.get('authenticated'):
     st.title(f"Welcome, {valid_client_names[client_id]}!")
-    st.write("Current working directory:", os.getcwd())
-    st.write("Files in current directory:", os.listdir(os.getcwd()))
     # Proceed with additional actions like loading data, etc.
 
     # Search for the financial forecast model using the Client ID and password
-    folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"
+    '''folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"
     folder_url = "https://1drv.ms/f/s!Ahn0H0cOCaQDgfMc1LO9pk6gggFmpg?e=co7UgN"
     file_url = "https://1drv.ms/x/s!Ahn0H0cOCaQDgfF3mqy41XTP7azu4Q?e=OAzxtu"
-    virtual_folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"
+    virtual_folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"'''
 
     folder_path = os.path.join(os.getcwd())  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
