@@ -158,7 +158,7 @@ if st.session_state.get('authenticated'):
 
     folder_path = os.path.join(os.getcwd(), "\.venv")  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
-    file_path = os.path.join(folder_path, file_name)
+    file_path = os.path.join(virtual_folder_path, file_name)
 
     if os.path.exists(file_path):
         try:            
