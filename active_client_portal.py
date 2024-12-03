@@ -242,8 +242,8 @@ if st.session_state.get('authenticated'):
                 else:
                     col = datetime.strptime(str(col), "%Y.%m")
 
-                #print(col)
-            #print(df[datetime.strptime(("2024.12"), "%Y.%m")])
+                print(col)
+            print(df[datetime.strptime(("2024.12"), "%Y.%m")])
             review_start_date_column = df[review_start_date]
             review_end_date_column = df[review_end_date]
 
@@ -373,7 +373,7 @@ if st.session_state.get('authenticated'):
             
             tik = 0
             for i in client_kpis:
-                kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
+                kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, datetime.strptime(review_end_date, "%Y.%m")])
 
             if st.sidebar.button("Adjust"):
                 # Generate a stacked column graph for Income, Gross Profit, Net Income
