@@ -276,7 +276,7 @@ if st.session_state.get('authenticated'):
             earnings_df = pd.concat(
                 [income_row, gm_row, noi_row],
                 axis=0
-            )[review_cols]
+            )[datetime.strptime(col, "%B %Y") for col in review_cols]
             
             earnings_df.index.name = "Legend"
             
