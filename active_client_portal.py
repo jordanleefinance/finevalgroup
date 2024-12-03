@@ -118,7 +118,7 @@ st.sidebar.title("Client Authentication")
 # Phase 1: Collect Client ID
 client_id = st.sidebar.text_input("Client ID", "")
 
-if st.sidebar.button("Request Temporary Password"):
+if st.sidebar.button("Request Security Code"):
     if client_id in valid_clients:
         temp_password = generate_temp_password()
         st.session_state['temp_password'] = temp_password
