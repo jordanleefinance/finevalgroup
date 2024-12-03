@@ -358,14 +358,11 @@ if st.session_state.get('authenticated'):
                     # Update layout with secondary y-axis for MRR
                     fig.update_layout(
                         title="Cash Flow and MRR Overview (Filtered)",
-                        xaxis=dict(title='Date'),
-                        yaxis=dict(title='Amount ($)'),
-                        yaxis2=dict(
-                            title="MRR ($)",
-                            overlaying='y',
-                            side='right'
+                        xaxis=dict(
+                        title='Date',
+                        tickangle=45  # Rotate x-axis labels for readability
                         ),
-                        barmode='stack',
+                        
                         yaxis=dict(
                             title='Amount ($)',
                             automargin=True  # Adjusts margins automatically for better spacing
