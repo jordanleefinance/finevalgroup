@@ -153,7 +153,8 @@ if st.session_state.get('authenticated'):
     # Proceed with additional actions like loading data, etc.
 
     # Search for the financial forecast model using the Client ID and password
-    folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"  # Replace with actual folder path
+    folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"
+    folder_path = os.path.join(os.getcwd(), "finevalgroup")  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
     file_path = os.path.join(folder_path, file_name)
 
