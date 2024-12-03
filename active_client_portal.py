@@ -45,7 +45,7 @@ valid_client_names = {
 }
 valid_client_emails = {
     "EI": "jordanlee2017@gmail.com",
-    "AL": "felicia@alhomebuilders.com",
+    "AL": "jordanlee2017@gmail.com",
     "DLI": "jordanlee2017@gmail.com",
     "DMSF": "jordanlee2017@gmail.com",
     "IA": "jordanlee2017@gmail.com",
@@ -146,14 +146,8 @@ if 'temp_password' in st.session_state:
 # Post-authentication content
 if st.session_state.get('authenticated'):
     st.title(f"Welcome, {valid_client_names[client_id]}!")
-    # Proceed with additional actions like loading data, etc.
-
+    # Proceed with additional actions like loading data, etc,
     # Search for the financial forecast model using the Client ID and password
-    '''folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"
-    folder_url = "https://1drv.ms/f/s!Ahn0H0cOCaQDgfMc1LO9pk6gggFmpg?e=co7UgN"
-    file_url = "https://1drv.ms/x/s!Ahn0H0cOCaQDgfF3mqy41XTP7azu4Q?e=OAzxtu"
-    virtual_folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"'''
-
     folder_path = os.path.join(os.getcwd())  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
     file_path = os.path.join(folder_path, file_name)
