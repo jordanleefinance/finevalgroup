@@ -332,6 +332,7 @@ if st.session_state.get('authenticated'):
                 cash_df = cash_df.style.format("${:,.2f}")
                 st.dataframe(cash_df)
                 fig = go.Figure()
+                print(cash_df.loc["Cash Flow From Investing"])
 
                 # Adding bar chart for CFFO, CFFI, CFFF, and Cash Ending Balance
                 for metric in ["Cash Flow From Operations", "Cash Flow From Investing", "Cash Flow From Financing", "Ending Balance"]:
