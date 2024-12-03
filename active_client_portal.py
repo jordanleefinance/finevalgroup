@@ -155,32 +155,10 @@ if st.session_state.get('authenticated'):
     folder_url = "https://1drv.ms/f/s!Ahn0H0cOCaQDgfMc1LO9pk6gggFmpg?e=co7UgN"
     file_url = "https://1drv.ms/x/s!Ahn0H0cOCaQDgfF3mqy41XTP7azu4Q?e=OAzxtu"
     virtual_folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\.venv"
-    try:
-        # Fetch the file from OneDrive Shared Folder
-        response = requests.get(file_url)
-        response.raise_for_status()
-        excel_file = BytesIO(response.content)
-        import zipfile
-        with zipfile.ZipFile(excel_file, 'w') as zip_file:
-            zip_file.write(client_id + "_FFM.xlsx")
-        workbook = load_workbook(filename=excel_file, data_only=True, read_only=True, keep_vba=True)
-        ws = workbook['Monthly Detail']
-         # Create a list of lists to store the data
-        data = []
 
-            # Iterate through rows and append data to the list
-        for row in ws.iter_rows(values_only=True):
-            data.append(row)
-
-            # Create a DataFrame, optionally setting the first row as headers
-        df2 = pd.DataFrame(data)
-        st.dataframe(df2)
-    except zipfile.BadZipFile:
-            st.error("Unable to open the file. The file may be corrupt or inaccessible.")
-
-    folder_path = os.path.join(os.getcwd(), "finevalgroup")  # Replace with actual folder path
+    folder_path = os.path.join(os.getcwd(), ".venv")  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
-    file_path = os.path.join(virtual_folder_path, file_name)
+    file_path = os.path.join(folder_path, file_name)
 
     if os.path.exists(file_path):
         try:            
