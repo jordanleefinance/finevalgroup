@@ -365,7 +365,7 @@ if st.session_state.get('authenticated'):
                             overlaying='y',
                             side='right'
                         ),
-                        barmode='stack'
+                        barmode='stack',
                         yaxis=dict(
                             title='Amount ($)',
                             automargin=True  # Adjusts margins automatically for better spacing
