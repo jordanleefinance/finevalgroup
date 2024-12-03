@@ -359,6 +359,7 @@ if st.session_state.get('authenticated'):
                 kpi_dfs,
                 axis=0
             )[review_cols]
+            #print(kpi_df)
 
             st.sidebar.subheader("Set date range to adjust the metrics below")
             selected_adjusted_start_date = st.sidebar.date_input("Select the start date of the date range to adjust:", value=first_day_next_month)
@@ -368,8 +369,11 @@ if st.session_state.get('authenticated'):
             
             tik = 0
             for i in client_kpis:
-                kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
-                print(kpi_toggle)
+                if kpi != "MRR":
+                    kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
+                    #print(kpi_toggle)
+                else:
+                    continue
 
             
             kpi_df.columns = formatted_cols
