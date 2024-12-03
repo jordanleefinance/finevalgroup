@@ -271,8 +271,8 @@ if st.session_state.get('authenticated'):
             cash_row = df.loc[df['Unnamed: 2'] == 'Ending Balance']
             cash_row.set_index('Unnamed: 2', inplace=True)
 
-            mrr_row = df.loc[df['Unnamed: 2'] == 'MRR']
-            mrr_row.set_index('Unnamed: 2', inplace=True)
+            mrr_row = df.loc[df[2022] == 'MRR']
+            mrr_row.set_index(2022, inplace=True)
             
             formatted_cols = []
             # Create the filtered earnings DataFrame
