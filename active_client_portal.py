@@ -317,6 +317,7 @@ if st.session_state.get('authenticated'):
                 axis=0
             )[review_cols]
             
+            cash_df.columns = formatted_cols
             cash_df.index.name = "Legend"
             
             st.write(f"Filtered Data from {formatted_start_date} to {formatted_end_date}:")
@@ -353,6 +354,7 @@ if st.session_state.get('authenticated'):
                 axis=0
             )[review_cols]
             
+            kpi_df.columns = formatted_cols
             kpi_df.index.name = "Legend"
             
             st.write(f"Filtered Data from {formatted_start_date} to {formatted_end_date}:")
