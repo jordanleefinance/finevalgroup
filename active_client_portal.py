@@ -354,6 +354,18 @@ if st.session_state.get('authenticated'):
                 axis=0
             )[review_cols]
             
+            st.sidebar.subheader("Set date range to adjust the metrics below")
+            selected_adjusted_start_date = st.sidebar.date_input("Select the start date of the date range to adjust:", value=first_day_next_month)
+            selected_adjusted_end_date = st.sidebar.date_input("Select the end date of the date range to adjust:", value=next_month)
+
+            st.sidebar.subheader("Key Performance Indicators")
+            
+            tik = 0
+            for i in client_kpis:
+                kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
+                print(kpi_toggle)
+
+            
             kpi_df.columns = formatted_cols
             kpi_df.index.name = "Legend"
             
@@ -376,17 +388,7 @@ if st.session_state.get('authenticated'):
             else:
                 st.warning("No data available for the selected date range.")
 
-            st.sidebar.subheader("Set date range to adjust the metrics below")
-            selected_adjusted_start_date = st.sidebar.date_input("Select the start date of the date range to adjust:", value=first_day_next_month)
-            selected_adjusted_end_date = st.sidebar.date_input("Select the end date of the date range to adjust:", value=next_month)
-
-            st.sidebar.subheader("Key Performance Indicators")
             
-            tik = 0
-            for i in client_kpis:
-                kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
-                print(kpi_toggle)
-
             if st.sidebar.button("Adjust"):
                 # Generate a stacked column graph for Income, Gross Profit, Net Income
                 required_columns = {"Income", "Gross Profit", "Net Income"}
