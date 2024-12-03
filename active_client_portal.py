@@ -129,7 +129,7 @@ if st.sidebar.button("Request Temporary Password"):
 
 # Phase 2: Validate Passwords
 if 'temp_password' in st.session_state:
-    client_password = st.sidebar.text_input("Client Password", "", type="password")
+    client_password = st.sidebar.text_input("Client Password", "DLI", type="password")
     encrypted_password = st.sidebar.text_input("Encrypted Passowrd (Sent to "f"{valid_client_emails[client_id]})", "test", type="password")
 
     if st.sidebar.button("Submit"):
@@ -156,9 +156,9 @@ if st.session_state.get('authenticated'):
     file_url = "https://1drv.ms/x/s!Ahn0H0cOCaQDgfF3mqy41XTP7azu4Q?e=OAzxtu"
     virtual_folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup"
 
-    folder_path = os.path.join(os.getcwd(), "\.venv")  # Replace with actual folder path
+    folder_path = os.path.join(os.getcwd())  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
-    file_path = os.path.join(virtual_folder_path, file_name)
+    file_path = os.path.join(folder_path, file_name)
 
     if os.path.exists(file_path):
         try:            
