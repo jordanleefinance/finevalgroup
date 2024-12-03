@@ -324,19 +324,39 @@ if st.session_state.get('authenticated'):
             cash_df.index.name = "Legend"
             
             st.write(f"Filtered Data from {formatted_start_date} to {formatted_end_date}:")
+            import plotly.graph_objects as go
             # Plot the data
             if not cash_df.empty:
-                stacked_data = cash_df.transpose().reset_index()
-                stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
-                cash_df = cash_df.style.format("${:,.2f}")
-                st.dataframe(cash_df)
-                fig = px.area(
-                    stacked_data,
-                    x="index",
-                    y="Amount",
-                    color="Legend",
-                    title="Cash Flow From Operations, Investing, Financing and Ending Balance (Filtered)",
-                    labels={"index": "Date", "Amount": "Amount ($)"}
+                fig = go.Figure()
+
+                # Adding bar chart for CFFO, CFFI, CFFF, and Cash Ending Balance
+                for metric in ["Cash Flow From Operations", "Cash Flow From Investing", "Cash Flow From Financing", "Ending Balance"]:
+                    fig.add_trace(go.Bar(
+                        x=cash_df.columns,
+                        y=cash_df.loc[metric],
+                        name=metric
+                    ))
+
+                # Adding MRR as a line chart with a secondary y-axis
+                fig.add_trace(go.Scatter(
+                    x=cash_df.columns,
+                    y=cash_df.loc["MRR"],
+                    mode='lines+markers',
+                    name='MRR',
+                    yaxis='y2'
+                ))
+
+                # Update layout with secondary y-axis for MRR
+                fig.update_layout(
+                    title="Cash Flow and MRR Overview (Filtered)",
+                    xaxis=dict(title='Date'),
+                    yaxis=dict(title='Amount ($)'),
+                    yaxis2=dict(
+                        title="MRR ($)",
+                        overlaying='y',
+                        side='right'
+                    ),
+                    barmode='stack'
                 )
                 st.plotly_chart(fig)
             else:
@@ -386,13 +406,30 @@ if st.session_state.get('authenticated'):
             if not kpi_df.empty:
                 stacked_data = kpi_df.transpose().reset_index()
                 stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
-                fig = px.line(
-                    stacked_data,
-                    x="index",
-                    y="Amount",
-                    color="Legend",
+
+                # Create the Plotly figure with a secondary y-axis
+                fig = go.Figure()
+
+                # Loop through KPI metrics and add them to the plot
+                for metric in kpi_df.index:
+                    yaxis_type = 'y2' if kpi_df.loc[metric].max() < 10 else 'y'
+                    fig.add_trace(go.Scatter(
+                        x=stacked_data[stacked_data['Legend'] == metric]['index'],
+                        y=stacked_data[stacked_data['Legend'] == metric]['Amount'],
+                        mode='lines+markers',
+                        name=metric,
+                        yaxis=yaxis_type
+                    ))
+
+                fig.update_layout(
                     title="Key Performance Indicators (Filtered)",
-                    labels={"index": "Date", "Amount": "Amount"}
+                    xaxis=dict(title='Date'),
+                    yaxis=dict(title='Amount'),
+                    yaxis2=dict(
+                        title='Low-value KPI Metrics',
+                        overlaying='y',
+                        side='right'
+                    )
                 )
                 st.plotly_chart(fig)
             else:
