@@ -160,11 +160,18 @@ if st.session_state.get('authenticated'):
         response = requests.get(file_url)
         response.raise_for_status()
         excel_file = BytesIO(response.content)
-        new_workbook = pd.ExcelFile(excel_file)
-        df = new_workbook.parse("Monthly Detail")
-            # Remove the first column from the header
-        df = df.iloc[:, :-1].set_axis(df.columns[1:], axis=1)
-        st.dataframe(df)
+        workbook = load_workbook(filename=file_path, data_only=True, read_only=True, keep_vba=True)
+        ws = workbook['Monthly Detail']
+         # Create a list of lists to store the data
+        data = []
+
+            # Iterate through rows and append data to the list
+        for row in ws.iter_rows(values_only=True):
+            data.append(row)
+
+            # Create a DataFrame, optionally setting the first row as headers
+        df2 = pd.DataFrame(data)
+        st.dataframe(df2)
     except InvalidFileException:
             st.error("Unable to open the file. The file may be corrupt or inaccessible.")
 
