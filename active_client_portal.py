@@ -162,7 +162,7 @@ if st.session_state.get('authenticated'):
         excel_file = BytesIO(response.content)
         import zipfile
         with zipfile.ZipFile(excel_file, 'w') as zip_file:
-            zip_file.write(f"{client_id}_FFM.xlsx")
+            zip_file.write(client_id + "_FFM.xlsx")
         workbook = load_workbook(filename=excel_file, data_only=True, read_only=True, keep_vba=True)
         ws = workbook['Monthly Detail']
          # Create a list of lists to store the data
