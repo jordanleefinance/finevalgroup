@@ -419,14 +419,17 @@ if st.session_state.get('authenticated'):
 
                 # Loop through KPI metrics and add them to the plot
                 for metric in kpi_df.index:
-                    yaxis_type = 'y2' if kpi_df.loc[metric].max() < 10 else 'y'
-                    fig.add_trace(go.Scatter(
-                        x=stacked_data[stacked_data['Legend'] == metric]['index'],
-                        y=stacked_data[stacked_data['Legend'] == metric]['Amount'],
-                        mode='lines+markers',
-                        name=metric,
-                        yaxis=yaxis_type
-                    ))
+                    if metric in kpi_df.index:
+                        yaxis_type = 'y2' if kpi_df.loc[metric].max() < 10 else 'y'
+                        fig.add_trace(go.Scatter(
+                            x=stacked_data[stacked_data['Legend'] == metric]['index'],
+                            y=stacked_data[stacked_data['Legend'] == metric]['Amount'],
+                            mode='lines',
+                            name=metric,
+                            yaxis=yaxis_type
+                        ))
+                    else:
+                        st.warning(f"{metric} not found in cash data. Check spelling or index structure.")
 
                 fig.update_layout(
                     title="Key Performance Indicators (Filtered)",
