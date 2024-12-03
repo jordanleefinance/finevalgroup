@@ -276,6 +276,7 @@ if st.session_state.get('authenticated'):
             for col in review_cols:
                 col = datetime.strptime(str(col), "%Y.%m")
                 col = col.strftime("%B %Y")
+                print(col)
             earnings_df = pd.concat(
                 [income_row, gm_row, noi_row],
                 axis=0
