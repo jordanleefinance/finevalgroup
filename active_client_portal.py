@@ -160,7 +160,7 @@ if st.session_state.get('authenticated'):
         response = requests.get(file_url)
         response.raise_for_status()
         excel_file = BytesIO(response.content)
-        workbook = load_workbook(filename=file_path, data_only=True, read_only=True, keep_vba=True)
+        workbook = load_workbook(filename=excel_file, data_only=True, read_only=True, keep_vba=True)
         ws = workbook['Monthly Detail']
          # Create a list of lists to store the data
         data = []
