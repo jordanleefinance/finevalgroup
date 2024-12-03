@@ -366,18 +366,35 @@ if st.session_state.get('authenticated'):
                             side='right'
                         ),
                         barmode='stack'
+                        yaxis=dict(
+                            title='Amount ($)',
+                            automargin=True  # Adjusts margins automatically for better spacing
+                        ),
+                        yaxis2=dict(
+                            title="MRR ($)",
+                            overlaying='y',  # Overlay with primary y-axis
+                            side='right',  # Position on the right side
+                            automargin=True
+                        ),
+                        legend=dict(
+                            x=0.5, y=1.15,  # Adjust legend position for better visibility
+                            xanchor='center',
+                            orientation='h'  # Horizontal legend
+                        ),
+                        margin=dict(
+                            l=80, r=80, t=100, b=100  # Increase margins to ensure no clipping
+                        ),
+                        barmode='stack',  # Stack bars for cash flow data
+                        plot_bgcolor='white'  # Set background color for better contrast
                     )
+
+                    # Display the chart
                     st.plotly_chart(fig)
                 else:
                     fig.update_layout(
                         title="Cash Flow (Filtered)",
                         xaxis=dict(title='Date'),
                         yaxis=dict(title='Amount ($)'),
-                        yaxis2=dict(
-                            title="MRR ($)",
-                            overlaying='y',
-                            side='right'
-                        ),
                         barmode='stack'
                     )
                     st.plotly_chart(fig)
