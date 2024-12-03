@@ -329,8 +329,8 @@ if st.session_state.get('authenticated'):
             if not cash_df.empty:
                 stacked_data = cash_df.transpose().reset_index()
                 stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
-                cash_df = cash_df.style.format("${:,.2f}")
-                st.dataframe(cash_df)
+                styled_cash_df = cash_df.style.format("${:,.2f}")
+                st.dataframe(styled_cash_df)
                 fig = go.Figure()
                 # print(cash_df.loc["Cash Flow From Investing"])
 
