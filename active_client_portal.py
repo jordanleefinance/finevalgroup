@@ -158,7 +158,7 @@ if st.session_state.get('authenticated'):
     try:
         # Fetch the file from OneDrive Shared Folder
         response = requests.get(file_url)
-        response.raise_for_statue()
+        response.raise_for_status()
         excel_file = BytesIO(response.content)
         new_workbook = pd.ExcelFile(excel_file)
         df = new_workbook.parse("Monthly Detail")
