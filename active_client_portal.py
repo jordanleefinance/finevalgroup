@@ -232,8 +232,8 @@ if st.session_state.get('authenticated'):
                     new_col = col + tok
                     # tok += 1
 
-                    new_date = datetime.strptime((str(new_col) + ".12"), "%Y.%m")
-                    df.rename(columns={col: new_date.strftime("%Y.%m")}, inplace=True)
+                    new_date = str(new_col) + ".12"
+                    df.rename(columns={col: new_date}, inplace=True)
                     col = new_date
                     
                     # review_cols.append(col)
@@ -243,7 +243,7 @@ if st.session_state.get('authenticated'):
                     col = datetime.strptime(str(col), "%Y.%m")
 
                 print(col)
-            print(df[datetime.strptime(("2024.12"), "%Y.%m")])
+            
             review_start_date_column = df[review_start_date]
             review_end_date_column = df[review_end_date]
 
