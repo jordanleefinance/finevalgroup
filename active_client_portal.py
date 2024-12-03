@@ -344,29 +344,45 @@ if st.session_state.get('authenticated'):
                         ))
                     else:
                         st.warning(f"{metric} not found in cash data. Check spelling or index structure.")
+                if "MRR" in client_kpis:
+                        
 
-                # Adding MRR as a line chart with a secondary y-axis
-                fig.add_trace(go.Scatter(
-                    x=cash_df.columns,
-                    y=cash_df.loc["MRR"],
-                    mode='lines+markers',
-                    name='MRR',
-                    yaxis='y2'
-                ))
+                    # Adding MRR as a line chart with a secondary y-axis
+                    fig.add_trace(go.Scatter(
+                        x=cash_df.columns,
+                        y=cash_df.loc["MRR"],
+                        mode='lines+markers',
+                        name='MRR',
+                        yaxis='y2'
+                    ))
+                    # Update layout with secondary y-axis for MRR
+                    fig.update_layout(
+                        title="Cash Flow and MRR Overview (Filtered)",
+                        xaxis=dict(title='Date'),
+                        yaxis=dict(title='Amount ($)'),
+                        yaxis2=dict(
+                            title="MRR ($)",
+                            overlaying='y',
+                            side='right'
+                        ),
+                        barmode='stack'
+                    )
+                    st.plotly_chart(fig)
+                else:
+                    fig.update_layout(
+                        title="Cash Flow (Filtered)",
+                        xaxis=dict(title='Date'),
+                        yaxis=dict(title='Amount ($)'),
+                        yaxis2=dict(
+                            title="MRR ($)",
+                            overlaying='y',
+                            side='right'
+                        ),
+                        barmode='stack'
+                    )
+                    st.plotly_chart(fig)
 
-                # Update layout with secondary y-axis for MRR
-                fig.update_layout(
-                    title="Cash Flow and MRR Overview (Filtered)",
-                    xaxis=dict(title='Date'),
-                    yaxis=dict(title='Amount ($)'),
-                    yaxis2=dict(
-                        title="MRR ($)",
-                        overlaying='y',
-                        side='right'
-                    ),
-                    barmode='stack'
-                )
-                st.plotly_chart(fig)
+                
             else:
                 st.warning("No data available for the selected date range.")
 
