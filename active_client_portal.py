@@ -369,7 +369,7 @@ if st.session_state.get('authenticated'):
             
             tik = 0
             for i in client_kpis:
-                if kpi != "MRR":
+                if i != "MRR":
                     kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
                     #print(kpi_toggle)
                 else:
