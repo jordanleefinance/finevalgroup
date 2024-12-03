@@ -274,7 +274,7 @@ if st.session_state.get('authenticated'):
             
             # Create the filtered earnings DataFrame
             for col in review_cols:
-                col = col.strftime("%B %Y")
+                col = datetime.strptime(str(col), "%B %Y")
             earnings_df = pd.concat(
                 [income_row, gm_row, noi_row],
                 axis=0
