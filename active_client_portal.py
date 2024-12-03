@@ -11,7 +11,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import random
 import string
-import base64
+from io import BytesIO
 
 # Correct usage
 bool_type = np.bool_
@@ -154,6 +154,16 @@ if st.session_state.get('authenticated'):
 
     # Search for the financial forecast model using the Client ID and password
     folder_path = r"C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\AL_FFM.xlsx"
+    folder_url = "https://1drv.ms/f/s!Ahn0H0cOCaQDgfMc1LO9pk6gggFmpg?e=co7UgN"
+    try:
+        # Fetch the file from OneDrive Shared Folder
+        response = requests.get(folder_url)
+        response.raise_for_statue()
+        excel_file = BytesIO(response.content)
+        print(excel_file)
+    except InvalidFileException:
+            st.error("Unable to open the file. The file may be corrupt or inaccessible.")
+
     folder_path = os.path.join(os.getcwd(), "finevalgroup")  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
     file_path = os.path.join(folder_path, file_name)
