@@ -271,16 +271,17 @@ if st.session_state.get('authenticated'):
             cash_row = df.loc[df['Unnamed: 2'] == 'Ending Balance']
             cash_row.set_index('Unnamed: 2', inplace=True)
             
-            
+            formatted_cols = []
             # Create the filtered earnings DataFrame
             for col in review_cols:
                 col = datetime.strptime(str(col), "%Y.%m")
                 col = col.strftime("%B %Y")
-                print(col)
+                formatted_cols.append(col)
+
             earnings_df = pd.concat(
                 [income_row, gm_row, noi_row],
                 axis=0
-            )[review_cols]
+            )[formatted_cols]
             
             earnings_df.index.name = "Legend"
             
