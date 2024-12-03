@@ -327,6 +327,10 @@ if st.session_state.get('authenticated'):
             import plotly.graph_objects as go
             # Plot the data
             if not cash_df.empty:
+                stacked_data = cash_df.transpose().reset_index()
+                stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
+                cash_df = cash_df.style.format("${:,.2f}")
+                st.dataframe(cash_df)
                 fig = go.Figure()
 
                 # Adding bar chart for CFFO, CFFI, CFFF, and Cash Ending Balance
@@ -406,8 +410,7 @@ if st.session_state.get('authenticated'):
             if not kpi_df.empty:
                 stacked_data = kpi_df.transpose().reset_index()
                 stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
-
-                # Create the Plotly figure with a secondary y-axis
+                 # Create the Plotly figure with a secondary y-axis
                 fig = go.Figure()
 
                 # Loop through KPI metrics and add them to the plot
@@ -434,23 +437,6 @@ if st.session_state.get('authenticated'):
                 st.plotly_chart(fig)
             else:
                 st.warning("No data available for the selected date range.")
-
-            
-            if st.sidebar.button("Adjust"):
-                # Generate a stacked column graph for Income, Gross Profit, Net Income
-                required_columns = {"Income", "Gross Profit", "Net Income"}
-                if required_columns.issubset(df.columns):
-                    fig = px.bar(
-                        df,
-                        x="Date",
-                        y=["Income", "Gross Profit", "Net Income"],
-                        title="Income, Gross Profit, and Net Income",
-                        labels={"value": "Amount", "variable": "Metrics"},
-                        barmode="stack"
-                    )
-                    st.plotly_chart(fig)
-                else:
-                    st.warning(f"Required columns {required_columns} not found in the dataset.")
             
             # Load the selected sheet into a DataFrame
             # active_sheet = workbook[selected_sheet]
