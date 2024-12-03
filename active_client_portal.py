@@ -283,6 +283,7 @@ if st.session_state.get('authenticated'):
                 axis=0
             )[review_cols]
             
+            earnings_df.columns = formatted_cols
             earnings_df.index.name = "Legend"
             
 
@@ -290,11 +291,6 @@ if st.session_state.get('authenticated'):
 
             # Plot the data
             if not earnings_df.empty:
-
-                for col in earnings_df.columns:
-                    col = datetime.strptime(str(col), "%Y.%m")
-                    col = col.strftime("%B %Y")
-
                 stacked_data = earnings_df.transpose().reset_index()
                 stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
                 earnings_df = earnings_df.style.format("${:,.2f}")
