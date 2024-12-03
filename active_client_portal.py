@@ -245,7 +245,7 @@ if st.session_state.get('authenticated'):
                 else:
                     col = datetime.strptime(str(col), "%Y.%m")
 
-                print(col)
+                #print(col)
             
             review_start_date_column = df[review_start_date]
             review_end_date_column = df[review_end_date]
@@ -281,7 +281,7 @@ if st.session_state.get('authenticated'):
             earnings_df = pd.concat(
                 [income_row, gm_row, noi_row],
                 axis=0
-            )[formatted_cols]
+            )[review_cols]
             
             earnings_df.index.name = "Legend"
             
@@ -290,6 +290,11 @@ if st.session_state.get('authenticated'):
 
             # Plot the data
             if not earnings_df.empty:
+
+                for col in earnings_df.columns:
+                    col = datetime.strptime(str(col), "%Y.%m")
+                    col = col.strftime("%B %Y")
+
                 stacked_data = earnings_df.transpose().reset_index()
                 stacked_data = stacked_data.melt(id_vars="index", var_name="Legend", value_name="Amount")
                 earnings_df = earnings_df.style.format("${:,.2f}")
