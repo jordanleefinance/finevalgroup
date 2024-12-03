@@ -194,7 +194,7 @@ if st.session_state.get('authenticated'):
 
             # Create a DataFrame, optionally setting the first row as headers
             df2 = pd.DataFrame(data)
-            print(df2.iloc[:15, 26:30])
+            print(df2.iloc[:15, 38:42])
             # df2.columns = df.iloc[0]  # Set the first row as header
             df2 = df[1:]  # Remove the first row from the data
 
@@ -225,7 +225,7 @@ if st.session_state.get('authenticated'):
             tok = -1
 
             for col in df.columns:
-                print(col)
+                #print(col)
                 if col == "Unnamed: 1" or col == "Unnamed: 2" or col == 2022:
                     continue
                 elif col == 2023 or col == 2024 or col == 2025 or col == 2026 or col == 2027 or col == 2028 or col == 2029 or col == 2030:
@@ -242,7 +242,7 @@ if st.session_state.get('authenticated'):
                 else:
                     col = datetime.strptime(str(col), "%Y.%m")
 
-                print(col)
+                #print(col)
             #print(df[datetime.strptime(("2024.12"), "%Y.%m")])
             review_start_date_column = df[review_start_date]
             review_end_date_column = df[review_end_date]
@@ -336,7 +336,7 @@ if st.session_state.get('authenticated'):
                 kpi_row = df.loc[df[2022] == kpi]
                 kpi_row.set_index(2022, inplace=True)
                 kpi_dfs.append(kpi_row)
-            print(kpi_dfs)
+            #Sprint(kpi_dfs)
 
             # Create the filtered KPIs DataFrame
             kpi_df = pd.concat(
