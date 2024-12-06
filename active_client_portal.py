@@ -44,7 +44,7 @@ valid_client_names = {
     "LB": "La Bete LLC"
 }
 valid_client_emails = {
-    "EI": "muneebsyed01@gmail.com",
+    "EI": "jordanlee2017@gmail.com",
     "AL": "jordanlee2017@gmail.com",
     "DLI": "jordanlee2017@gmail.com",
     "DMSF": "jordanlee2017@gmail.com",
