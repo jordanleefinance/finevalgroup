@@ -450,7 +450,7 @@ if st.session_state.get('authenticated'):
 
                 return value_changed, current_value
 
-            def adjust_forecast_kpi(dataframe, client_kpis, start_date, end_date):
+            def adjust_forecast_kpi(dataframe, value, start_date, end_date):
                 """
                 Adjust KPI values in the forecast DataFrame based on user inputs and validate date ranges.
 
@@ -474,18 +474,26 @@ if st.session_state.get('authenticated'):
                 if start_date < review_start or end_date > review_end:
                     return st.warning("Warning: Adjustment date range exceeds the review date range.")
                 '''
+                valid_adjustable_columns = []
+                for col in dataframe.columns:
+                    if start_date < col < end_date:
+                        valid_adjustable_columns.append(col)
 
-                for kpi_name in client_kpis:
-                    if has_sidebar_number_input_changed(kpi_name)[0]:
-                        # Apply adjustment
-                        adjustment = has_sidebar_number_input_changed(kpi_name)[1]
-                        print(dataframe.index)
-                        print(adjustment)
-                        mask = (dataframe[kpi_name] >= start_date) & (dataframe[kpi_name] <= end_date)
-                        dataframe.loc[mask, kpi_name] = adjustment
-                    else:
-                        continue
+                
 
+
+
+                for kpi_name, adjustment in client_kpis.items():
+                    # if has_sidebar_number_input_changed(kpi_name)[0]:
+                    # Apply adjustment
+                    if kpi_name in dataframe.index:
+                        dataframe.loc[kpi_name, valid_adjustable_columns] = adjustment
+                    '''adjustment = has_sidebar_number_input_changed(kpi_name)[1]
+                    print(dataframe.index)
+                    print(adjustment)
+                    mask = (dataframe[kpi_name] >= start_date) & (dataframe[kpi_name] <= end_date)
+                    dataframe.loc[mask, kpi_name] = adjustment'''
+                
                 return dataframe
 
             if st.sidebar.button("Apply Adjustment"):
