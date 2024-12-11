@@ -245,14 +245,6 @@ if st.session_state.get('authenticated'):
                 else:
                     col = datetime.strptime(str(col), "%Y.%m")
 
-                #print(col)
-            
-            review_start_date_column = df[review_start_date]
-            review_end_date_column = df[review_end_date]
-
-            # print(df.columns)
-
-
             income_row = df.loc[df['Unnamed: 2'] == "Total Income"]
             income_row.set_index('Unnamed: 2', inplace=True)
             gm_row = df.loc[df["Unnamed: 2"] == 'Gross Profit']
@@ -479,7 +471,7 @@ if st.session_state.get('authenticated'):
 
 
                 # Validate date ranges
-                if datetime.strptime(str(start_date), "%Y.%m") < datetime.strptime(str(review_start), "%Y.%m") or datetime.strptime(str(end_date), "%Y.%m") > datetime.strptime(str(review_end), "%Y.%m"):
+                if start_date < review_start or end_date > review_end:
                     return st.warning("Warning: Adjustment date range exceeds the review date range.")
                 
                 for kpi_name in client_kpis:
