@@ -454,11 +454,11 @@ if st.session_state.get('authenticated'):
                 value_changed = current_value != previous_value
 
                 # Update the previous value
-                # st.session_state['previous_values'][key] = current_value
+                st.session_state['previous_values'][key] = current_value
 
-                return value_changed, current_value
+                return value_changed
 
-            def adjust_forecast_kpi(dataframe, client_kpis, start_date, end_date, review_s, review_e):
+            def adjust_forecast_kpi(dataframe, client_kpis, start_date, end_date, adjustment_percentage, review_s, review_e):
                 """
                 Adjust KPI values in the forecast DataFrame based on user inputs and validate date ranges.
 
@@ -482,20 +482,18 @@ if st.session_state.get('authenticated'):
                     return st.warning("Warning: Adjustment date range exceeds the review date range.")
                 
                 for kpi_name in client_kpis:
-                    if has_sidebar_number_input_changed(kpi_name)[0]:
+                    if has_sidebar_number_input_changed(kpi_name):
                         # Apply adjustment
-                        adjustment = has_sidebar_number_input_changed(kpi_name)[1]
+                        adjustment_factor = 1 + (adjustment_percentage / 100)
                         mask = (dataframe['date'] >= start_date) & (dataframe['date'] <= end_date)
-                        dataframe.loc[mask, kpi_name] = adjustment
+                        dataframe.loc[mask, kpi_name] *= adjustment_factor
                     else:
                         continue
 
                 return dataframe
 
             if st.button("Apply Adjustment"):
-                kpi_df = adjust_forecast_kpi(kpi_df, client_kpis=client_kpis, start_date=selected_adjusted_start_date, 
-                end_date=selected_adjusted_end_date, review_s=selected_review_start_date, review_e=review_end_date)
-            
+                kpi_df = adjust_forecast_kpi(kpi_df, )
 
             kpi_df.columns = formatted_cols
             kpi_df.index.name = "Legend"
