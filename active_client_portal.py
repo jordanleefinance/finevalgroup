@@ -478,7 +478,9 @@ if st.session_state.get('authenticated'):
                 review_end = review_e
 
                 # Validate date ranges
-                if datetime.strptime(start_date, "%Y.%m") < review_start or datetime.strptime(end_date, "%Y.%m") > review_end:
+                print(type(start_date))
+                print(type(review_start))
+                if start_date < review_start or end_date > review_end:
                     return st.warning("Warning: Adjustment date range exceeds the review date range.")
                 
                 for kpi_name in client_kpis:
