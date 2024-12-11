@@ -450,7 +450,7 @@ if st.session_state.get('authenticated'):
 
                 return value_changed, current_value
 
-            def adjust_forecast_kpi(dataframe, client_kpis, start_date, end_date, review_s, review_e):
+            def adjust_forecast_kpi(dataframe, client_kpis, start_date, end_date):
                 """
                 Adjust KPI values in the forecast DataFrame based on user inputs and validate date ranges.
 
@@ -466,14 +466,14 @@ if st.session_state.get('authenticated'):
                 pd.DataFrame: Adjusted DataFrame.
                 str: Warning message if date range exceeds the review range.
                 """
-                review_start = review_s
-                review_end = review_e
+                '''review_start = review_s
+                review_end = review_e'''
 
 
-                # Validate date ranges
+                '''# Validate date ranges
                 if start_date < review_start or end_date > review_end:
                     return st.warning("Warning: Adjustment date range exceeds the review date range.")
-                
+                '''
                 for kpi_name in client_kpis:
                     if has_sidebar_number_input_changed(kpi_name)[0]:
                         # Apply adjustment
@@ -487,7 +487,7 @@ if st.session_state.get('authenticated'):
 
             if st.sidebar.button("Apply Adjustment"):
                 kpi_df = adjust_forecast_kpi(kpi_df, client_kpis=client_kpis, start_date=selected_adjusted_start_date, 
-                end_date=selected_adjusted_end_date, review_s=selected_review_start_date, review_e=review_end_date)
+                end_date=selected_adjusted_end_date)
             
 
             kpi_df.columns = formatted_cols
