@@ -474,12 +474,14 @@ if st.session_state.get('authenticated'):
                 if start_date < review_start or end_date > review_end:
                     return st.warning("Warning: Adjustment date range exceeds the review date range.")
                 '''
+
                 for kpi_name in client_kpis:
                     if has_sidebar_number_input_changed(kpi_name)[0]:
                         # Apply adjustment
                         adjustment = has_sidebar_number_input_changed(kpi_name)[1]
-                        print(dataframe)
-                        mask = (dataframe[2022] >= start_date) & (dataframe[2022] <= end_date)
+                        print(dataframe[kpi_name])
+                        print(adjustment)
+                        mask = (dataframe[kpi_name] >= start_date) & (dataframe[kpi_name] <= end_date)
                         dataframe.loc[mask, kpi_name] = adjustment
                     else:
                         continue
