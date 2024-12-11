@@ -478,6 +478,7 @@ if st.session_state.get('authenticated'):
                     if has_sidebar_number_input_changed(kpi_name)[0]:
                         # Apply adjustment
                         adjustment = has_sidebar_number_input_changed(kpi_name)[1]
+                        print(dataframe)
                         mask = (dataframe['date'] >= start_date) & (dataframe['date'] <= end_date)
                         dataframe.loc[mask, kpi_name] = adjustment
                     else:
