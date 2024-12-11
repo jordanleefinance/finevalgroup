@@ -478,8 +478,8 @@ if st.session_state.get('authenticated'):
                 review_end = review_e
 
                 # Validate date ranges
-                print(type(start_date))
-                print(type(review_start))
+                print(type(end_date))
+                print(type(review_end))
                 if start_date < review_start or end_date > review_end:
                     return st.warning("Warning: Adjustment date range exceeds the review date range.")
                 
