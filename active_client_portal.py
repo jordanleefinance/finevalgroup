@@ -492,7 +492,7 @@ if st.session_state.get('authenticated'):
 
                 return dataframe
 
-            if st.button("Apply Adjustment"):
+            if st.sidebar.button("Apply Adjustment"):
                 kpi_df = adjust_forecast_kpi(kpi_df, client_kpis=client_kpis, start_date=selected_adjusted_start_date, 
                 end_date=selected_adjusted_end_date, review_s=selected_review_start_date, review_e=review_end_date)
             
