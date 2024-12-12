@@ -417,39 +417,6 @@ if st.session_state.get('authenticated'):
 
             st.sidebar.subheader("Key Performance Indicators")
 
-            kpi_toggles = []
-            for i in client_kpis:
-                if i != "MRR":
-                    kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
-                    kpi_toggles.append(kpi_toggle)
-                else:
-                    continue
-
-            def has_sidebar_number_input_changed(current_value) -> bool:
-                """
-                Checks if a user changed a `st.sidebar.number_input`.
-                
-                Args:
-                    key (str): A unique key for the number_input widget.
-                    label (str): The label displayed for the number_input widget.
-                    default_value (float): The default value for the number_input widget.
-                    step (float): The increment step for the number_input widget.
-                
-                Returns:
-                    bool: True if the number_input value changed, False otherwise.
-                """
-                if 'previous_values' not in st.session_state:
-                    st.session_state['previous_values'] = {}
-
-                # Compare with the previous value
-                previous_value = st.session_state['previous_values'].get(key)
-                value_changed = current_value != previous_value
-
-                # Update the previous value
-                # st.session_state['previous_values'][key] = current_value
-
-                return value_changed, current_value
-
             def adjust_forecast_kpi(dataframe, value, start_date, end_date):
                 """
                 Adjust KPI values in the forecast DataFrame based on user inputs and validate date ranges.
@@ -479,15 +446,11 @@ if st.session_state.get('authenticated'):
                     if start_date < col < end_date:
                         valid_adjustable_columns.append(col)
 
-                
-
-
-
-                for kpi_name, adjustment in client_kpis.items():
+                for kpi_name in client_kpis.items():
                     # if has_sidebar_number_input_changed(kpi_name)[0]:
                     # Apply adjustment
                     if kpi_name in dataframe.index:
-                        dataframe.loc[kpi_name, valid_adjustable_columns] = adjustment
+                        dataframe.loc[kpi_name, valid_adjustable_columns] = value
                     '''adjustment = has_sidebar_number_input_changed(kpi_name)[1]
                     print(dataframe.index)
                     print(adjustment)
@@ -496,8 +459,24 @@ if st.session_state.get('authenticated'):
                 
                 return dataframe
 
+            kpi_toggles = []
+            for i in client_kpis:
+                if i != "MRR":
+                    if "previous_value" not in st.session_state:
+                        st.session_state.previous_value = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
+                    kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
+
+                    if kpi_toggle != st.session_state.previous_value:
+                        adjust_forecast_kpi(kpi_df, kpi_toggle, selected_adjusted_start_date, selected_adjusted_end_date)
+
+                    # kpi_toggles.append(kpi_toggle)
+                else:
+                    continue
+
+            
+
             if st.sidebar.button("Apply Adjustment"):
-                kpi_df = adjust_forecast_kpi(kpi_df, client_kpis=client_kpis, start_date=selected_adjusted_start_date, 
+                kpi_df = adjust_forecast_kpi(kpi_df, start_date=selected_adjusted_start_date, 
                 end_date=selected_adjusted_end_date)
             
 
