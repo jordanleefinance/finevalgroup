@@ -443,7 +443,7 @@ if st.session_state.get('authenticated'):
                 '''
                 valid_adjustable_columns = []
                 for col in dataframe.columns:
-                    if start_date < col < end_date:
+                    if datetime.strptime(start_date, "%Y.%m") < datetime.strptime(col, "%Y.%m") < datetime.strptime(end_date, "%Y.%m"):
                         valid_adjustable_columns.append(col)
 
                 for kpi_name in client_kpis.items():
