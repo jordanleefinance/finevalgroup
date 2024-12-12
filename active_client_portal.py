@@ -446,7 +446,7 @@ if st.session_state.get('authenticated'):
                     if datetime.strptime(str(start_date), "%Y-%m-%d") < datetime.strptime(col, "%Y.%m") <datetime.strptime(str(end_date), "%Y-%m-%d"):
                         valid_adjustable_columns.append(col)
 
-                for kpi_name in client_kpis.items():
+                for kpi_name in client_kpis:
                     # if has_sidebar_number_input_changed(kpi_name)[0]:
                     # Apply adjustment
                     if kpi_name in dataframe.index:
