@@ -458,7 +458,7 @@ if st.session_state.get('authenticated'):
                     dataframe.loc[mask, kpi_name] = adjustment'''
                 
                 return dataframe
-
+            new_kpi_df = kpi_df
             kpi_toggles = []
             for i in client_kpis:
                 if i != "MRR":
@@ -467,7 +467,7 @@ if st.session_state.get('authenticated'):
                     kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
 
                     if kpi_toggle != st.session_state.previous_value:
-                        adjust_forecast_kpi(kpi_df, kpi_toggle, selected_adjusted_start_date, selected_adjusted_end_date)
+                        new_kpi_df = adjust_forecast_kpi(kpi_df, kpi_toggle, selected_adjusted_start_date, selected_adjusted_end_date)
 
                     # kpi_toggles.append(kpi_toggle)
                 else:
@@ -476,8 +476,7 @@ if st.session_state.get('authenticated'):
             
 
             if st.sidebar.button("Apply Adjustment"):
-                kpi_df = adjust_forecast_kpi(kpi_df, start_date=selected_adjusted_start_date, 
-                end_date=selected_adjusted_end_date)
+                kpi_df = new_kpi_df
             
 
             kpi_df.columns = formatted_cols
