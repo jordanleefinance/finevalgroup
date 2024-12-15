@@ -1,145 +1,113 @@
 import openpyxl
-import win32com.client
 import os
 from datetime import datetime, timedelta
+from openpyxl.utils import get_column_letter, column_index_from_string
 
-import os
+class ExcelProcessor:
+    def __init__(self, original_file_path):
+        self.original_file_path = original_file_path
+        self.unprotected_file_path = self._generate_unprotected_file_path()
 
-def remove_password(file_path, password, new_file_path):
-    # Initialize Excel application
-    excel = win32com.client.Dispatch("Excel.Application")
-    excel.Visible = False  # Set to True if you want to see Excel
+    def _generate_unprotected_file_path(self):
+        base, ext = os.path.splitext(self.original_file_path)
+        return f"{base}_Unprotected{ext}"
 
-    try:
-        # Open the workbook with the password
-        workbook = excel.Workbooks.Open(file_path, Password=password)
-
-        # Check if the directory for the new file exists
-        new_file_dir = os.path.dirname(new_file_path)
-        if not os.path.exists(new_file_dir):
-            raise FileNotFoundError(f"The directory '{new_file_dir}' does not exist.")
-        
-        if os.path.exists(new_file_path)==False:
-
-            # Save a new copy without password protection
-            workbook.SaveAs(new_file_path, Password='', FileFormat=51)  # 51 for .xlsx
-            print(f"Password removed successfully. New file saved as: {new_file_path}")
-        else:
-            # Save a new copy without password protection
-            workbook.Save(new_file_path)  # 51 for .xlsx
-            print(f"Password removed successfully. New file saved as: {new_file_path}")
-
-
-    except Exception as e:
-        print(f"An error occurred while removing password: {e}")
-
-    finally:
-        # Close the workbook and quit Excel
+    def remove_password(self):
         try:
-            workbook.Close(SaveChanges=True)
+            # Verify if the file is an Excel file
+            if not self.original_file_path.endswith(('.xlsx', '.xlsm')):
+                raise ValueError("The file is not a valid Excel file.")
+
+            # Load the workbook
+            workbook = openpyxl.load_workbook(self.original_file_path, read_only=False, keep_vba=True)
+
+            # Save a new copy without password protection
+            if not os.path.exists(self.unprotected_file_path):
+                workbook.save(self.unprotected_file_path)
+                print(f"Password removed successfully. New file saved as: {self.unprotected_file_path}")
+            else:
+                print(f"Unprotected file already exists: {self.unprotected_file_path}")
+        except ValueError as ve:
+            print(f"An error occurred: {ve}")
         except Exception as e:
-            print(f"An error occurred while closing the workbook: {e}")
-        excel.Quit()
+            print(f"An error occurred while removing password: {e}")
 
-def find_date_in_row(file_path, sheet_name='Monthly Detail', search_row='4:4', target_date=datetime.today().replace(day=1)-timedelta(days=1)):
-    # Initialize Excel application
-    excel = win32com.client.Dispatch("Excel.Application")
-    excel.Visible = False  # Set to True if you want to see Excel
-    # Open the workbook
-    workbook = excel.Workbooks.Open(file_path)
-        
-    # Access the 'Monthly Detail' sheet
-    sheet = workbook.Sheets(sheet_name)
+    def find_date_in_row(self, sheet_name='Monthly Detail', search_row=4, target_date=None):
+        try:
+            # Load the workbook and select the sheet
+            workbook = openpyxl.load_workbook(self.unprotected_file_path, data_only=True)
+            sheet = workbook[sheet_name]
 
-    # Set target_date to the last day of the previous month if not provided
-    if target_date is None:
-        target_date = datetime.today().replace(day=1) - timedelta(days=1)
+            # Set the target date to the last day of the previous month if not provided
+            if target_date is None:
+                target_date = datetime.today().replace(day=1) - timedelta(days=1)
 
-    # Convert target date to a datetime object
-    if isinstance(target_date, str):
-        target_date = datetime.strptime(target_date, '%m/%d/%Y')  # Adjust format as needed
+            # Search for the target date in the specified row
+            for cell in sheet[search_row]:
+                if isinstance(cell.value, datetime) and cell.value.date() == target_date.date():
+                    column_index = cell.column
+                    column_letter = get_column_letter(column_index)
 
-    # Iterate through the specified row
-    found = False
-    #print(target_date)
-    for cell in sheet.UsedRange.Range(search_row):
-        #cell.Value = datetime.strptime(cell.Value, '%m/%d/%Y')
-        #print(cell.value)
-        if isinstance(cell.Value, datetime):
-            if cell.Value.date() == target_date.date():  # Compare only dates
-                column_letter = cell.Address.split('$')[1]  # Get the address to extract column letter
-                if len(column_letter)>1:
-                    pre_column_letter = column_letter[0] + chr(ord(column_letter[1]) - 1)
-                    post_column_letter = column_letter[0] + chr(ord(column_letter[1]) + 1)
+                    # Safely calculate previous and next column letters
+                    pre_column_letter = get_column_letter(column_index - 1) if column_index > 1 else None
+                    post_column_letter = get_column_letter(column_index + 1)
 
-                # Handle special case for column 'AA'
-                if column_letter == 'AA':
-                    pre_column_letter = 'Z'
-                else:
-                    pre_column_letter = chr(ord(column_letter) - 1)
-                    post_column_letter = chr(ord(column_letter) + 1)
-                print(f"Found date {target_date.date()} in column {column_letter}. Values in this column:")
-                found = True
-                return f"{pre_column_letter}:{pre_column_letter}", f"{column_letter}:{column_letter}", f"{post_column_letter}:{post_column_letter}"
+                    print(f"Found date {target_date} in column {column_letter}.")
+                    return (
+                        f"{pre_column_letter}:{pre_column_letter}" if pre_column_letter else None,
+                        f"{column_letter}:{column_letter}",
+                        f"{post_column_letter}:{post_column_letter}",
+                    )
 
-    if not found:
-        print(f"Date {target_date.date()} not found in row {search_row}.")
+            print(f"Date {target_date.date()} not found in row {search_row}.")
+            return None
+        except Exception as e:
+            print(f"An error occurred while finding the date: {e}")
+            return None
 
-def copy_formatting_and_formulas(file_path, target_date):
-    # Initialize Excel application
-    excel = win32com.client.Dispatch("Excel.Application")
-    excel.Visible = False  # Set to True if you want to see Excel
-    print(find_date_in_row(file_path, target_date=target_date))
-    pre_source = str(find_date_in_row(file_path, target_date=target_date)[0])
-    source = str(find_date_in_row(file_path, target_date=target_date)[1])
-    target = str(find_date_in_row(file_path, target_date=target_date)[2])
-    try:
-        # Open the workbook
-        workbook = excel.Workbooks.Open(file_path)
-        
-        # Access the 'Monthly Detail' sheet
-        sheet = workbook.Sheets('Monthly Detail')
+    def copy_formatting_and_formulas(self, sheet_name='Monthly Detail', target_date=None):
+        try:
+            # Find the source and target columns
+            result = self.find_date_in_row(sheet_name, target_date=target_date)
+            if result is None:
+                raise ValueError("Date not found in the specified row.")
 
-        # Copy formatting and formulas from column AA to AB
-        pre_source_range = sheet.UsedRange.Range(pre_source)
-        source_range = sheet.UsedRange.Range(source)
-        target_range = sheet.UsedRange.Range(target)
-        
-        # Copy the source range
-        source_range.Copy(target_range)
-        pre_source_range.Copy(source_range)
-        #pre_source_range.Borders("Z1:Z150").LineStyle=0
+            pre_source, source, target = result
 
-        # Save changes
-        workbook.Save()
-    except Exception as e:
+            # Validate column ranges
+            if not source or not target:
+                raise ValueError("Source or target column is invalid.")
+
+            # Load the workbook and select the sheet
+            workbook = openpyxl.load_workbook(self.unprotected_file_path)
+            sheet = workbook[sheet_name]
+
+            # Copy formatting and formulas
+            if pre_source:
+                for pre_source_cell, source_cell in zip(sheet[pre_source], sheet[source]):
+                    source_cell.value = pre_source_cell.value
+                    source_cell.number_format = pre_source_cell.number_format
+
+            for source_cell, target_cell in zip(sheet[source], sheet[target]):
+                target_cell.value = source_cell.value
+                target_cell.number_format = source_cell.number_format
+
+            # Save changes
+            workbook.save(self.unprotected_file_path)
+            print("Formatting and formulas copied successfully.")
+        except Exception as e:
             print(f"An error occurred while copying formatting: {e}")
 
-    finally:
-        # Open the workbook
-        workbook = excel.Workbooks.Open(file_path)
-
-        # Close the workbook and quit Excel
-        workbook.Close(SaveChanges=True)
-        excel.Quit()
-
-    print("Formatting and formulas copied successfully from AA to AB.")
-        
-
-# Usage
+# Usage example
 if __name__ == "__main__":
-    # Path to the original password-protected Excel file
-    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\SandBox_FFM_Updated.xlsx'  # Update this with your file path
-    password = "sb!"
-    
-    # Path to save the new unprotected Excel file
-    new_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\SandBox_FFM_Unprotected.xlsx'  # Update this with your desired path
+    # Path to the original Excel file
+    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\SandBox_FFM_Updated.xlsx'
 
-    # Check if the original file exists
-    if not os.path.exists(original_file_path):
-        print(f"Error: The file '{original_file_path}' was not found.")
-    else:
-        remove_password(original_file_path, password, new_file_path)
+    # Initialize the processor
+    processor = ExcelProcessor(original_file_path)
 
-        # Proceed to copy formatting and formulas if the password removal was successful
-        copy_formatting_and_formulas(new_file_path, '08/31/2024')
+    # Remove password protection
+    processor.remove_password()
+
+    # Copy formatting and formulas
+    processor.copy_formatting_and_formulas(target_date=datetime(2024, 8, 31))
