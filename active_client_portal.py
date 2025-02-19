@@ -402,7 +402,7 @@ if st.session_state.get('authenticated'):
                     kpi_dfs.append(kpi_row)
                 else:
                     continue
-            #Sprint(kpi_dfs)
+            #print(kpi_dfs)
 
             # Create the filtered KPIs DataFrame
             kpi_df = pd.concat(
@@ -462,8 +462,8 @@ if st.session_state.get('authenticated'):
             kpi_toggles = []
             for i in client_kpis:
                 if i != "MRR":
-                    if "previous_value" not in st.session_state:
-                        st.session_state.previous_value = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
+                    '''if "previous_value" not in st.session_state:
+                        st.session_state.previous_value = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])'''
                     kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
 
                     if kpi_toggle != st.session_state.previous_value:
