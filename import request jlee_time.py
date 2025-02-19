@@ -6,16 +6,16 @@ from datetime import datetime, timedelta
 
 
 # Configuration
-CLIENT_ID = 'ABxiy7uRFMAodckBhQH7Civ7khF4z9WDRVKwKs7YKLVJUHIZZt'
-CLIENT_SECRET = 'jA88goCfvChG2HBf5oHTrOhSLu1CTMd6FqL2IoAG'
-ACCESS_TOKEN = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..cVob3TiUj4aguDRoIBGEbQ.90pp_bbWwNslsUsqd2sUl6K2RRXNvaJhSsW6tDAsPUjQg5HrCgRv1JmSwF2ZS8VI4_TSbC47ebAgizs4iETTl1Mx_eJBU7tRYQ19y6o2MGfi5yEkSvBXm8kKd1HbRXLu4HOhixhmaH4AO6j1UIMr_TE5Fnjk7KqPz3zlcOKgLvTpu6olUG6fLd2qBzc47AcMKC9-DZrET7kzOls8Oexh9xrxQI-69CYlzfFuzjw_Mmx2vY6Fz31iV3tTzDyZRnJBRkN6hllxQJ6mzzpMSkQYrSVU5wDl4OCUDvfaGFKwwARdWMbOFKvDoHAWnQiUpjd6c-ptx39BU-HBOdED-YpBZrKsZjsBfM4NVgkmpBl4TKKHs3lVKbOQlpRKuaMOemzlaMpicwYu7sRKoa6fwwuLVM7ys2H0QlE-yQW-n42ZKDvPz8wYTwiZymhqfz7f6lIf5YuP7EwLb-LegccVEdPbfuAJlm2pSUo3S9kVHDY8Hm8EFBdIzRn3nFFgPcTVgPk5Spt4inzA6oB5RyyjgnqsiHLGf1S69b_f2NWea-x3k4H4yGs_OV_kBsgw2U4gWSjNF0H2upsfBuBeXqJ4XB4iTXZqohEzcQ-JZ_o7GNw0pMtaCt1Uajx8RjX2YS_B3AvIyIX62uZ08tUMnFBu8B5fZtKmRkVIXvMzXQA-QNIzhSfRRRfLF0su63t4E9Og6cRmGMGHEuF-cYCStEueReQ9iFrTW3LR65TplrK4fEW9lpI.plJjuPEJWyTTYXI9dUXoAw'
-COMPANY_ID = '9341452910276277'
+CLIENT_ID = 'ABI1vL3lZyVenjBBSq6C1BYOcfHtgdzske95vpcqejvKtLejeN'
+CLIENT_SECRET = 'B2qiYeQMGfNl68M1yEJu1bsT8G94C16EDai55O2p'
+ACCESS_TOKEN = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..f6TfPURW7cgd1yP_rVbsDg.2InIxggp2nQvENm2Cej-Wn_IY_TZMa8Y0sXmvVD4UAq7DT8krOvxiwjEpQxab5PMd9OCGivbgMeswYD15aXUQLgjcOgodwANBpi-bB3wTiid_-nlZmC9wpdbABmcEYsUaLwKiRxSLJu3azrffD8cuxDLipmHdopTRh7jMwUDw5muMjxmfTcbr0QIybAX2GjZ_YLZL3oWSMQ3_154-4-M-M-2OyhLkVKR9ZW9OECjU4DRg2BBNwe_9O7aNZh8q6cxJJIew1xwIst8hXS1EYJeRSdbXz6A7Z_a2XSe_oNrAezam_c6bJNgG80-ZW6lzOdBBJz7xsR-7GYSA1rsAhXn_uU1gjaangMG3j2TfYJKnW-NgWYc903FaNk6MpVF-MBRvwuv9jieMS1fPvCXaFLBeQ1AWElHGDgtGhHTkKYlCbdUxWTMpJHuhe9917AYMyBjeARS6J--BH7QAKPh2WT1sZdYt6FiWSSuev8iBeGNKTWPW5TzzkEM4ufWdiS9nAcl7OYTKWlwAaYKp_s9esQv6lXTsAbhU6gVmuAcv7TssWK95okGre8czbW_QZVgLsWJdfM38orWo0GgRi7MHSL8Dv0GCZDgjprW8H1hxGBPf_qqGQeE4x70tlY_LxuEMqPnjE0zquOW17BRMVzdQt5bFoUt2lE5uV5n-y2M3As5FKqDoaoV84idjhMa8UBkQ2P490i5egNEgU9LKXEHaYdQE2EHLjWAD7F_AOYTnyp9bwO3KSJ6kuYnEXFQ8VPfWYio.Z4e8ahbgYLzVor5pEx3Zpw'
+COMPANY_ID = '9341453163478319'
 
 # QuickBooks API endpoints
-BASE_URL = 'https://qbo.intuit.com/app/switchCompany?companyId='
-BASE_URL = 'https://sandbox-quickbooks.api.intuit.com/v3/company'
-BALANCE_SHEET_ENDPOINT = f'{BASE_URL}/{COMPANY_ID}/reports/BalanceSheet'
-PROFIT_AND_LOSS_ENDPOINT = f'{BASE_URL}/{COMPANY_ID}/reports/ProfitAndLoss'
+PROD_URL = 'https://quickbooks.api.intuit.com'
+DEPLOY_URL = 'https://sandbox-quickbooks.api.intuit.com/v3/company'
+BALANCE_SHEET_ENDPOINT = f'{PROD_URL}/{COMPANY_ID}/reports/BalanceSheet'
+PROFIT_AND_LOSS_ENDPOINT = f'{PROD_URL}/{COMPANY_ID}/reports/ProfitAndLoss'
 
 # Set up headers
 headers = {
@@ -94,8 +94,8 @@ for month in months:
     month_end_date = f'{month}-{pd.Period(month).days_in_month}'
 
     # Update endpoints with date parameters
-    balance_sheet_endpoint = f'{BASE_URL}/{COMPANY_ID}/reports/BalanceSheet?start_date={month_start_date}&end_date={month_end_date}'
-    profit_and_loss_endpoint = f'{BASE_URL}/{COMPANY_ID}/reports/ProfitAndLoss?start_date={month_start_date}&end_date={month_end_date}'
+    balance_sheet_endpoint = f'{PROD_URL}/{COMPANY_ID}/reports/BalanceSheet?start_date={month_start_date}&end_date={month_end_date}'
+    profit_and_loss_endpoint = f'{PROD_URL}/{COMPANY_ID}/reports/ProfitAndLoss?start_date={month_start_date}&end_date={month_end_date}'
 
     # Request the balance sheet and profit & loss data for the month
     response = requests.get(balance_sheet_endpoint, headers=headers)
