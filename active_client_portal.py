@@ -496,7 +496,7 @@ if st.session_state.get('authenticated'):
                                 if col in header:
                                     col_idx = header.index(col) + 1  # Excel columns are 1-based
                                     ws.range((kpi_row, col_idx)).value = val
-                    wb.app.calculate()  # Force recalculation
+                    app.calculate()  # Force recalculation
                     wb.save()
                     wb.close()
                 finally:
