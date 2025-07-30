@@ -478,7 +478,7 @@ if st.session_state.get('authenticated'):
                 else:
                     continue
             def update_and_recalc_excel(file_path, kpi_updates, review_cols):
-                app = xw.App(visible=False)
+                app = xw.App(visible=True)
                 try:
                     wb = app.books.open(file_path)
                     ws = wb.sheets['Monthly Detail']
