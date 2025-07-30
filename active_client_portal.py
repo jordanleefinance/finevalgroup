@@ -477,7 +477,7 @@ if st.session_state.get('authenticated'):
                     # kpi_toggles.append(kpi_toggle)
                 else:
                     continue
-            def update_and_recalc_excel(file_path, kpi_updates, review_cols):
+            '''def update_and_recalc_excel(file_path, kpi_updates, review_cols):
                 app = xw.App(visible=True)
                 try:
                     wb = app.books.open(file_path)
@@ -500,11 +500,25 @@ if st.session_state.get('authenticated'):
                     wb.save()
                     wb.close()
                 finally:
-                    app.quit()
+                    app.quit()'''
+
+            def update_excel_kpis(file_path, kpi_updates, review_cols):
+                wb = load_workbook(file_path)
+                ws = wb['Monthly Detail']
+                header = [cell.value for cell in ws[1]]
+                for kpi, values in kpi_updates.items():
+                    for row in ws.iter_rows(min_row=2):
+                        if row[1].value == kpi:  # Assuming KPI names are in column B
+                            for col, val in zip(review_cols, values):
+                                if col in header:
+                                    col_idx = header.index(col)
+                                    row[col_idx].value = val
+                wb.save(file_path)
 
             
 
             if st.sidebar.button("Apply Adjustment"):
+
                  # Collect new KPI values from sidebar
                 kpi_updates = {}
                 for i in client_kpis:
@@ -512,7 +526,7 @@ if st.session_state.get('authenticated'):
                         # You may want to collect values for each review_col, here is a simple example:
                         kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
                 # Update Excel file and recalculate formulas
-                update_and_recalc_excel(file_path, kpi_updates, review_cols)
+                update_excel_kpis(file_path, kpi_updates, review_cols)
                 st.success("KPI values updated and formulas recalculated in Excel.")
 
                 # Reload the DataFrame from Excel to reflect updated formulas
