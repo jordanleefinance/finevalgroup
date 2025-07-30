@@ -510,7 +510,7 @@ if st.session_state.get('authenticated'):
                 for i in client_kpis:
                     if i != "MRR":
                         # You may want to collect values for each review_col, here is a simple example:
-                        kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])]
+                        kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
                 # Update Excel file and recalculate formulas
                 update_and_recalc_excel(file_path, kpi_updates, review_cols)
                 st.success("KPI values updated and formulas recalculated in Excel.")
