@@ -426,29 +426,7 @@ if st.session_state.get('authenticated'):
             
 
             def adjust_forecast_kpi(dataframe, value, start_date, end_date):
-                """
-                Adjust KPI values in the forecast DataFrame based on user inputs and validate date ranges.
-
-                Parameters:
-                dataframe (pd.DataFrame): The forecast DataFrame with a 'date' column and KPI columns.
-                kpi_name (str): The name of the KPI column to adjust.
-                start_date (str): The start date of the adjustment range (YYYY-MM-DD).
-                end_date (str): The end date of the adjustment range (YYYY-MM-DD).
-                adjustment_percentage (float): Percentage change to apply (e.g., 10 for +10%).
-                review_date_range (tuple): Tuple of start and end dates for the review range (YYYY-MM-DD).
-
-                Returns:
-                pd.DataFrame: Adjusted DataFrame.
-                str: Warning message if date range exceeds the review range.
-                """
-                '''review_start = review_s
-                review_end = review_e'''
-
-
-                '''# Validate date ranges
-                if start_date < review_start or end_date > review_end:
-                    return st.warning("Warning: Adjustment date range exceeds the review date range.")
-                '''
+          
                 valid_adjustable_columns = []
                 for col in dataframe.columns:
                     if datetime.strptime(str(start_date), "%Y-%m-%d") < datetime.strptime(col, "%Y.%m") <datetime.strptime(str(end_date), "%Y-%m-%d"):
@@ -459,11 +437,6 @@ if st.session_state.get('authenticated'):
                     # Apply adjustment
                     if kpi_name in dataframe.index:
                         dataframe.loc[kpi_name, valid_adjustable_columns] = value
-                    '''adjustment = has_sidebar_number_input_changed(kpi_name)[1]
-                    print(dataframe.index)
-                    print(adjustment)
-                    mask = (dataframe[kpi_name] >= start_date) & (dataframe[kpi_name] <= end_date)
-                    dataframe.loc[mask, kpi_name] = adjustment'''
                 
                 return dataframe
             new_kpi_df = kpi_df
@@ -477,30 +450,7 @@ if st.session_state.get('authenticated'):
                     # kpi_toggles.append(kpi_toggle)
                 else:
                     continue
-            '''def update_and_recalc_excel(file_path, kpi_updates, review_cols):
-                app = xw.App(visible=True)
-                try:
-                    wb = app.books.open(file_path)
-                    ws = wb.sheets['Monthly Detail']
-                    # Read header row
-                    header = ws.range('A1').expand('right').value
-                    for kpi, values in kpi_updates.items():
-                        # Find the row for this KPI (assuming KPI names are in column B)
-                        kpi_row = None
-                        for row in range(2, ws.cells.last_cell.row + 1):
-                            if ws.range(f'B{row}').value == kpi:
-                                kpi_row = row
-                                break
-                        if kpi_row:
-                            for col, val in zip(review_cols, values):
-                                if col in header:
-                                    col_idx = header.index(col) + 1  # Excel columns are 1-based
-                                    ws.range((kpi_row, col_idx)).value = val
-                    app.calculate()  # Force recalculation
-                    wb.save()
-                    wb.close()
-                finally:
-                    app.quit()'''
+   
 
             def update_excel_kpis(file_path, kpi_updates, review_cols):
                 wb = load_workbook(file_path)
@@ -528,6 +478,13 @@ if st.session_state.get('authenticated'):
                 # Update Excel file and recalculate formulas
                 update_excel_kpis(file_path, kpi_updates, review_cols)
                 st.success("KPI values updated and formulas recalculated in Excel.")
+                with open(file_path, "rb") as f:
+                    st.download_button(
+                        label="Download Updated Excel File",
+                        data=f,
+                        file_name=os.path.basename(file_path),
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
 
                 # Reload the DataFrame from Excel to reflect updated formulas
                 new_workbook = pd.ExcelFile(file_path)
