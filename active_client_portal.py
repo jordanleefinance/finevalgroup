@@ -478,13 +478,21 @@ if st.session_state.get('authenticated'):
                 # Update Excel file and recalculate formulas
                 update_excel_kpis(file_path, kpi_updates, review_cols)
                 st.success("KPI values updated and formulas recalculated in Excel.")
-                with open(file_path, "rb") as f:
-                    st.download_button(
-                        label="Download Updated Excel File",
-                        data=f,
-                        file_name=os.path.basename(file_path),
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
+                def get_excel_bytes(file_path):
+                    wb = load_workbook(file_path)
+                    bio = BytesIO()
+                    wb.save(bio)
+                    bio.seek(0)
+                    return bio
+
+                # After updating and saving the workbook:
+                excel_bytes = get_excel_bytes(file_path)
+                st.download_button(
+                    label="Download Updated Excel File",
+                    data=excel_bytes,
+                    file_name=os.path.basename(file_path),
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
 
                 # Reload the DataFrame from Excel to reflect updated formulas
                 new_workbook = pd.ExcelFile(file_path)
