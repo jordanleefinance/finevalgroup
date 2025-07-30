@@ -13,6 +13,7 @@ import random
 import string
 from io import BytesIO
 import requests
+import xlwings as xw
 
 # Correct usage
 bool_type = np.bool_
@@ -33,7 +34,8 @@ valid_clients = {
     "DLI": "DLI2024!",
     "DMSF": "DMSF2024!",
     "IA": "IA2024!",
-    "LB": "LB2024!"
+    "LB": "LB2024!",
+    "JMM": "JMM2025!"
 }
 valid_client_names = {
     "EI": "Est Institute",
@@ -41,7 +43,8 @@ valid_client_names = {
     "DLI": "Legacy Tattoo",
     "DMSF": "Darnerien McCants Sports & Fitness",
     "IA": "Intentionally Amazing",
-    "LB": "La Bete LLC"
+    "LB": "La Bete LLC",
+    "JMM": "JMM Group LLC"
 }
 valid_client_emails = {
     "EI": "jordanlee2017@gmail.com",
@@ -49,7 +52,8 @@ valid_client_emails = {
     "DLI": "jordanlee2017@gmail.com",
     "DMSF": "jordanlee2017@gmail.com",
     "IA": "jordanlee2017@gmail.com",
-    "LB": "jordanlee2017@gmail.com"
+    "LB": "jordanlee2017@gmail.com",
+    "JMM": "jordanlee2017@gmail.com"
 }
 
 # Assign each client with an industry based on business type
@@ -59,7 +63,9 @@ valid_client_business_type = {
     "DLI": "Tattoo Parlor",
     "DMSF": "Fitness Trainer",
     "IA": "Nail Salon",
-    "LB": "Barbershop"
+    "LB": "Barbershop",
+    "JMM": "Business Consulting Services"
+
 }
 
 # Set up dictionary for industry key performance indicators (Industry: ["KPI #1", "KPI #2", "etc."])
@@ -113,7 +119,7 @@ def send_email(recipient_email, temp_password):
 
 # Streamlit Sidebar for Authentication
 
-st.sidebar.title("Client Authentication")
+st.sidebar.title("Client 2-Factor Authentication")
 
 # Phase 1: Collect Client ID
 client_id = st.sidebar.text_input("Client ID", "")
@@ -129,7 +135,7 @@ if st.sidebar.button("Request Security Code"):
 
 # Phase 2: Validate Passwords
 if 'temp_password' in st.session_state:
-    client_password = st.sidebar.text_input("Client Password", "AL2024!", type="password")
+    client_password = st.sidebar.text_input("Client Password", "JMM", type="password")
     encrypted_password = st.sidebar.text_input("Encrypted Passowrd (Sent to "f"{valid_client_emails[client_id]})", "test", type="password")
 
     if st.sidebar.button("Submit"):
@@ -151,6 +157,7 @@ if st.session_state.get('authenticated'):
     folder_path = os.path.join(os.getcwd())  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
     file_path = os.path.join(folder_path, file_name)
+    industry = valid_client_business_type[client_id]
 
     if os.path.exists(file_path):
         try:            
@@ -205,7 +212,7 @@ if st.session_state.get('authenticated'):
 
             st.sidebar.subheader("Set date range to review")
             selected_review_start_date = st.sidebar.date_input("Select a start date to review:", value=datetime(previous_month.year, 1, 1))
-            selected_review_end_date = st.sidebar.date_input("Select a end date to review:", value=datetime(2024, 12, 31)) #previous_month)
+            selected_review_end_date = st.sidebar.date_input("Select a end date to review:", value=datetime(2025, 12, 31)) #previous_month)
        
 
             if selected_review_start_date.month > 9:
@@ -416,6 +423,7 @@ if st.session_state.get('authenticated'):
             selected_adjusted_end_date = st.sidebar.date_input("Select the end date of the date range to adjust:", value=next_month)
 
             st.sidebar.subheader("Key Performance Indicators")
+            
 
             def adjust_forecast_kpi(dataframe, value, start_date, end_date):
                 """
@@ -462,28 +470,65 @@ if st.session_state.get('authenticated'):
             kpi_toggles = []
             for i in client_kpis:
                 if i != "MRR":
-                    '''if "previous_value" not in st.session_state:
-                        st.session_state.previous_value = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])'''
+                    
                     kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
 
-                    '''if kpi_toggle != st.session_state.previous_value:
-                        new_kpi_df = adjust_forecast_kpi(kpi_df, kpi_toggle, selected_adjusted_start_date, selected_adjusted_end_date)'''
-
+                    
                     # kpi_toggles.append(kpi_toggle)
                 else:
                     continue
+            def update_and_recalc_excel(file_path, kpi_updates, review_cols):
+                app = xw.App(visible=False)
+                try:
+                    wb = app.books.open(file_path)
+                    ws = wb.sheets['Monthly Detail']
+                    # Read header row
+                    header = ws.range('A1').expand('right').value
+                    for kpi, values in kpi_updates.items():
+                        # Find the row for this KPI (assuming KPI names are in column B)
+                        kpi_row = None
+                        for row in range(2, ws.cells.last_cell.row + 1):
+                            if ws.range(f'B{row}').value == kpi:
+                                kpi_row = row
+                                break
+                        if kpi_row:
+                            for col, val in zip(review_cols, values):
+                                if col in header:
+                                    col_idx = header.index(col) + 1  # Excel columns are 1-based
+                                    ws.range((kpi_row, col_idx)).value = val
+                    wb.app.calculate()  # Force recalculation
+                    wb.save()
+                    wb.close()
+                finally:
+                    app.quit()
 
             
 
             if st.sidebar.button("Apply Adjustment"):
-                kpi_df = new_kpi_df
+                 # Collect new KPI values from sidebar
+                kpi_updates = {}
+                for i in client_kpis:
+                    if i != "MRR":
+                        # You may want to collect values for each review_col, here is a simple example:
+                        kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])]
+                # Update Excel file and recalculate formulas
+                update_and_recalc_excel(file_path, kpi_updates, review_cols)
+                st.success("KPI values updated and formulas recalculated in Excel.")
+
+                # Reload the DataFrame from Excel to reflect updated formulas
+                new_workbook = pd.ExcelFile(file_path)
+                df = new_workbook.parse("Monthly Detail")
+                # ...continue with your DataFrame processing...
+
+        # ...existing code...           
+        # Create the filtered KPIs DataFrame
             
 
             kpi_df.columns = formatted_cols
             kpi_df.index.name = "Legend"
             
             st.write(f"Filtered Data from {formatted_start_date} to {formatted_end_date}:")
-            st.dataframe(kpi_df)
+            st.dataframe(kpi_df.style.format("{:.2f}"))  # Format all numbers in kpi_df to 2 decimal places
 
             # Plot the data
             if not kpi_df.empty:
