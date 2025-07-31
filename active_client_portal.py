@@ -484,7 +484,7 @@ if st.session_state.get('authenticated'):
             kpi_updates = {}
             for i in client_kpis:
                 if i != "MRR":
-                    kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])]
+                    kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
 
             if st.sidebar.button("Apply Adjustment"):
 
