@@ -16,4 +16,3 @@ Pillow~=11.0.0
 numpy_financial~=1.0.0
 xlsxwriter
 xlwings ~=0.32.0
-shutil~=1.0.0
