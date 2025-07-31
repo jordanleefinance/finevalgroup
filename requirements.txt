@@ -17,5 +17,3 @@ numpy_financial~=1.0.0
 xlsxwriter
 xlwings ~=0.32.0
 shutil~=1.0.0
-streamlit-extras~=0.2.0
-streamlit-aggrid~=0.4.0
