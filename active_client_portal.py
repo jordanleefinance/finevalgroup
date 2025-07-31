@@ -466,6 +466,7 @@ if st.session_state.get('authenticated'):
                                     col_idx = col_indices[col]
                                     row[col_idx].value = val
                 wb.save(adjusted_file_path)
+                wb.close()  # Close the workbook after saving
                 print("Header:", header)
                 for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
                     print("KPI row value:", row[1].value)
