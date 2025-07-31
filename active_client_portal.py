@@ -451,7 +451,15 @@ if st.session_state.get('authenticated'):
                 else:
                     continue
    
+            import shutil
+
+            # ...existing code...
+
             adjusted_file_path = os.path.join(folder_path, f"{client_id}_Adjusted_FFM.xlsx")
+
+            # Create the adjusted file if it doesn't exist
+            if not os.path.exists(adjusted_file_path):
+                shutil.copy(file_path, adjusted_file_path)
             def update_excel_kpis(adjusted_file_path, kpi_updates, review_cols):
                 wb = load_workbook(adjusted_file_path)
                 ws = wb['Monthly Detail']
@@ -472,16 +480,16 @@ if st.session_state.get('authenticated'):
                 for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
                     print("KPI row value:", row[1].value)
 
-            
+            # Render KPI adjustment inputs ONCE
+            kpi_updates = {}
+            for i in client_kpis:
+                if i != "MRR":
+                    kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
 
             if st.sidebar.button("Apply Adjustment"):
 
                  # Collect new KPI values from sidebar
-                # Render KPI adjustment inputs ONCE
-                kpi_updates = {}
-                for i in client_kpis:
-                    if i != "MRR":
-                        kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
+                
 
                 # Button only triggers update, does not re-render inputs
                 
