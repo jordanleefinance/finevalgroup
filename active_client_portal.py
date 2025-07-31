@@ -474,7 +474,7 @@ if st.session_state.get('authenticated'):
 
             
 
-            if st.sidebar.button("Apply Adjustment", key="apply_adjustment"):
+            if st.sidebar.button("Apply Adjustment"):
 
                  # Collect new KPI values from sidebar
                 # Render KPI adjustment inputs ONCE
