@@ -484,15 +484,16 @@ if st.session_state.get('authenticated'):
                         kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
 
                 # Button only triggers update, does not re-render inputs
-                if st.sidebar.button("Apply Adjustment", key="apply_adjustment"):
-                    update_excel_kpis(file_path, kpi_updates, review_cols)
-                    st.success("KPI values updated and formulas recalculated in Excel.")
-                    # Force recalculation of formulas in Excel
+                
+                update_excel_kpis(file_path, kpi_updates, review_cols)
+                st.success("KPI values updated and formulas recalculated in Excel.")
+                # Force recalculation of formulas in Excel
                 def get_excel_bytes(file_path):
                     wb = load_workbook(file_path)
                     bio = BytesIO()
                     wb.save(bio)
-                    bio.seek(0)
+                    wb.close()  # Close the workbook after saving
+                    bio.seek(0) # Reset pointer to the start
                     return bio
 
                 # After updating and saving the workbook:
