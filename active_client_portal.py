@@ -474,7 +474,7 @@ if st.session_state.get('authenticated'):
 
             
 
-            if st.sidebar.button("Apply Adjustment"):
+            if st.sidebar.button("Apply Adjustment", key="apply_adjustment"):
 
                  # Collect new KPI values from sidebar
                 # Render KPI adjustment inputs ONCE
@@ -484,7 +484,7 @@ if st.session_state.get('authenticated'):
                         kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
 
                 # Button only triggers update, does not re-render inputs
-                if st.sidebar.button("Apply Adjustment"):
+                if st.sidebar.button("Apply Adjustment", key="apply_adjustment"):
                     update_excel_kpis(file_path, kpi_updates, review_cols)
                     st.success("KPI values updated and formulas recalculated in Excel.")
                     # Force recalculation of formulas in Excel
