@@ -453,20 +453,21 @@ if st.session_state.get('authenticated'):
             def update_excel_kpis(adjusted_file_path, kpi_updates, review_cols):
                 wb = load_workbook(adjusted_file_path)
                 ws = wb['Monthly Detail']
-                # Get header values (first row)
-                header = [cell.value for cell in ws[1]]
-                # Find the column index for each review_col
+                header = [str(cell.value).strip() if cell.value is not None else "" for cell in ws[1]]
+                # Only use columns that exist in the header
                 col_indices = {col: header.index(col) for col in review_cols if col in header}
                 for kpi, values in kpi_updates.items():
                     for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-                        # Make sure to match the KPI name exactly as it appears in the sheet
-                        if str(row[1].value).strip() == str(kpi).strip():
+                        kpi_cell = str(row[1].value).strip() if row[1].value is not None else ""
+                        if kpi_cell == str(kpi).strip():
                             for col, val in zip(review_cols, values):
                                 if col in col_indices:
                                     col_idx = col_indices[col]
-                                    row[col_idx].value = val
+                                    # Only update if the cell is not a header or None
+                                    if row[col_idx].row > 1 and header[col_idx] == col:
+                                        row[col_idx].value = val
                 wb.save(adjusted_file_path)
-                wb.close()  # Close the workbook after saving
+                wb.close()
                 print("Header:", header)
                 for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
                     print("KPI row value:", row[1].value)
