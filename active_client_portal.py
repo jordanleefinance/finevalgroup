@@ -440,16 +440,6 @@ if st.session_state.get('authenticated'):
                 
                 return dataframe
             new_kpi_df = kpi_df
-            kpi_toggles = []
-            for i in client_kpis:
-                if i != "MRR":
-                    
-                    kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
-
-                    
-                    # kpi_toggles.append(kpi_toggle)
-                else:
-                    continue
    
             import shutil
 
