@@ -484,13 +484,11 @@ if st.session_state.get('authenticated'):
             kpi_updates = {}
             for i in client_kpis:
                 if i != "MRR":
-                    kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
+                    kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])]
 
             if st.sidebar.button("Apply Adjustment"):
 
                  # Collect new KPI values from sidebar
-                
-
                 # Button only triggers update, does not re-render inputs
                 
                 update_excel_kpis(adjusted_file_path, kpi_updates, review_cols)
