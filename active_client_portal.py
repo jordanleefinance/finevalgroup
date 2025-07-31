@@ -451,9 +451,9 @@ if st.session_state.get('authenticated'):
                 else:
                     continue
    
-
-            def update_excel_kpis(file_path, kpi_updates, review_cols):
-                wb = load_workbook(file_path)
+            adjusted_file_path = os.path.join(folder_path, f"{client_id}_Adjusted_FFM.xlsx")
+            def update_excel_kpis(adjusted_file_path, kpi_updates, review_cols):
+                wb = load_workbook(adjusted_file_path)
                 ws = wb['Monthly Detail']
                 # Get header values (first row)
                 header = [cell.value for cell in ws[1]]
@@ -467,7 +467,7 @@ if st.session_state.get('authenticated'):
                                 if col in col_indices:
                                     col_idx = col_indices[col]
                                     row[col_idx].value = val
-                wb.save(file_path)
+                wb.save(adjusted_file_path)
                 print("Header:", header)
                 for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
                     print("KPI row value:", row[1].value)
@@ -485,11 +485,11 @@ if st.session_state.get('authenticated'):
 
                 # Button only triggers update, does not re-render inputs
                 
-                update_excel_kpis(file_path, kpi_updates, review_cols)
+                update_excel_kpis(adjusted_file_path, kpi_updates, review_cols)
                 st.success("KPI values updated and formulas recalculated in Excel.")
                 # Force recalculation of formulas in Excel
-                def get_excel_bytes(file_path):
-                    wb = load_workbook(file_path)
+                def get_excel_bytes(adjusted_file_path):
+                    wb = load_workbook(adjusted_file_path)
                     bio = BytesIO()
                     wb.save(bio)
                     wb.close()  # Close the workbook after saving
@@ -497,15 +497,15 @@ if st.session_state.get('authenticated'):
                     return bio
 
                 # After updating and saving the workbook:
-                excel_bytes = get_excel_bytes(file_path)
+                excel_bytes = get_excel_bytes(adjusted_file_path)
                 st.download_button(
                     label="Download Updated Excel File",
                     data=excel_bytes,
-                    file_name=os.path.basename(file_path)
+                    file_name=os.path.basename(adjusted_file_path)
                 )
 
                 # Reload the DataFrame from Excel to reflect updated formulas
-                new_workbook = pd.ExcelFile(file_path)
+                new_workbook = pd.ExcelFile(adjusted_file_path)
                 df = new_workbook.parse("Monthly Detail")
                 # ...continue with your DataFrame processing...
 
