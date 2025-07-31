@@ -451,21 +451,43 @@ if st.session_state.get('authenticated'):
             if not os.path.exists(adjusted_file_path):
                 shutil.copy(file_path, adjusted_file_path)
             def update_excel_kpis(adjusted_file_path, kpi_updates, review_cols):
+                from openpyxl.utils import get_column_letter
+
                 wb = load_workbook(adjusted_file_path)
                 ws = wb['Monthly Detail']
                 header = [str(cell.value).strip() if cell.value is not None else "" for cell in ws[1]]
-                # Only use columns that exist in the header
                 col_indices = {col: header.index(col) for col in review_cols if col in header}
+
+                # Print header and col_indices for debugging
+                print("Header row:", header)
+                print("col_indices:", col_indices)
+
+                # Get merged cell ranges for safety
+                merged_ranges = [str(merge) for merge in ws.merged_cells.ranges]
+
                 for kpi, values in kpi_updates.items():
+                    found_kpi = False
                     for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
                         kpi_cell = str(row[1].value).strip() if row[1].value is not None else ""
                         if kpi_cell == str(kpi).strip():
+                            found_kpi = True
                             for col, val in zip(review_cols, values):
                                 if col in col_indices:
                                     col_idx = col_indices[col]
-                                    # Only update if the cell is not a header or None
+                                    cell = row[col_idx]
+                                    cell_ref = f"{get_column_letter(col_idx+1)}{cell.row}"
+                                    # Check if cell is in a merged range
+                                    if any(cell_ref in rng for rng in merged_ranges):
+                                        print(f"Skipping merged cell: {cell_ref}")
+                                        continue
+                                    # Only update if header matches and not None
                                     if row[col_idx].row > 1 and header[col_idx] == col:
                                         row[col_idx].value = val
+                                    else:
+                                        print(f"Skipping cell {cell_ref}: header mismatch or not a data cell")
+                    if not found_kpi:
+                        print(f"KPI '{kpi}' not found in sheet.")
+
                 wb.save(adjusted_file_path)
                 wb.close()
                 print("Header:", header)
