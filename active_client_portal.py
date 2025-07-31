@@ -455,29 +455,39 @@ if st.session_state.get('authenticated'):
             def update_excel_kpis(file_path, kpi_updates, review_cols):
                 wb = load_workbook(file_path)
                 ws = wb['Monthly Detail']
+                # Get header values (first row)
                 header = [cell.value for cell in ws[1]]
+                # Find the column index for each review_col
+                col_indices = {col: header.index(col) for col in review_cols if col in header}
                 for kpi, values in kpi_updates.items():
-                    for row in ws.iter_rows(min_row=2):
-                        if row[1].value == kpi:  # Assuming KPI names are in column B
+                    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+                        # Make sure to match the KPI name exactly as it appears in the sheet
+                        if str(row[1].value).strip() == str(kpi).strip():
                             for col, val in zip(review_cols, values):
-                                if col in header:
-                                    col_idx = header.index(col)
+                                if col in col_indices:
+                                    col_idx = col_indices[col]
                                     row[col_idx].value = val
                 wb.save(file_path)
+                print("Header:", header)
+                for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+                    print("KPI row value:", row[1].value)
 
             
 
             if st.sidebar.button("Apply Adjustment"):
 
                  # Collect new KPI values from sidebar
+                # Render KPI adjustment inputs ONCE
                 kpi_updates = {}
                 for i in client_kpis:
                     if i != "MRR":
-                        # You may want to collect values for each review_col, here is a simple example:
                         kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
-                # Update Excel file and recalculate formulas
-                update_excel_kpis(file_path, kpi_updates, review_cols)
-                st.success("KPI values updated and formulas recalculated in Excel.")
+
+                # Button only triggers update, does not re-render inputs
+                if st.sidebar.button("Apply Adjustment"):
+                    update_excel_kpis(file_path, kpi_updates, review_cols)
+                    st.success("KPI values updated and formulas recalculated in Excel.")
+                    # Force recalculation of formulas in Excel
                 def get_excel_bytes(file_path):
                     wb = load_workbook(file_path)
                     bio = BytesIO()
@@ -490,8 +500,7 @@ if st.session_state.get('authenticated'):
                 st.download_button(
                     label="Download Updated Excel File",
                     data=excel_bytes,
-                    file_name=os.path.basename(file_path),
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    file_name=os.path.basename(file_path)
                 )
 
                 # Reload the DataFrame from Excel to reflect updated formulas
