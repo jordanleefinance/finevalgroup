@@ -13,7 +13,7 @@ import random
 import string
 from io import BytesIO
 import requests
-import xlwings as xw
+#import xlwings as xw
 
 # Correct usage
 bool_type = np.bool_
@@ -156,7 +156,9 @@ if st.session_state.get('authenticated'):
     # Search for the financial forecast model using the Client ID and password
     folder_path = os.path.join(os.getcwd())  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
+    st.text(file_name)
     file_path = os.path.join(folder_path, file_name)
+    st.text(file_path)
     industry = valid_client_business_type[client_id]
 
     if os.path.exists(file_path):
