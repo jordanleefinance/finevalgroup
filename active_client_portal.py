@@ -13,6 +13,7 @@ import random
 import string
 from io import BytesIO
 import requests
+#import xlwings as xw
 
 # Correct usage
 bool_type = np.bool_
@@ -33,7 +34,8 @@ valid_clients = {
     "DLI": "DLI2024!",
     "DMSF": "DMSF2024!",
     "IA": "IA2024!",
-    "LB": "LB2024!"
+    "LB": "LB2024!",
+    "JMM": "JMM2025!"
 }
 valid_client_names = {
     "EI": "Est Institute",
@@ -41,7 +43,8 @@ valid_client_names = {
     "DLI": "Legacy Tattoo",
     "DMSF": "Darnerien McCants Sports & Fitness",
     "IA": "Intentionally Amazing",
-    "LB": "La Bete LLC"
+    "LB": "La Bete LLC",
+    "JMM": "JMM Group LLC"
 }
 valid_client_emails = {
     "EI": "jordanlee2017@gmail.com",
@@ -49,7 +52,8 @@ valid_client_emails = {
     "DLI": "jordanlee2017@gmail.com",
     "DMSF": "jordanlee2017@gmail.com",
     "IA": "jordanlee2017@gmail.com",
-    "LB": "jordanlee2017@gmail.com"
+    "LB": "jordanlee2017@gmail.com",
+    "JMM": "jordanlee2017@gmail.com"
 }
 
 # Assign each client with an industry based on business type
@@ -59,7 +63,9 @@ valid_client_business_type = {
     "DLI": "Tattoo Parlor",
     "DMSF": "Fitness Trainer",
     "IA": "Nail Salon",
-    "LB": "Barbershop"
+    "LB": "Barbershop",
+    "JMM": "Business Consulting Services"
+
 }
 
 # Set up dictionary for industry key performance indicators (Industry: ["KPI #1", "KPI #2", "etc."])
@@ -113,7 +119,7 @@ def send_email(recipient_email, temp_password):
 
 # Streamlit Sidebar for Authentication
 
-st.sidebar.title("Client Authentication")
+st.sidebar.title("Client 2-Factor Authentication")
 
 # Phase 1: Collect Client ID
 client_id = st.sidebar.text_input("Client ID", "")
@@ -129,7 +135,7 @@ if st.sidebar.button("Request Security Code"):
 
 # Phase 2: Validate Passwords
 if 'temp_password' in st.session_state:
-    client_password = st.sidebar.text_input("Client Password", "AL2024!", type="password")
+    client_password = st.sidebar.text_input("Client Password", "JMM", type="password")
     encrypted_password = st.sidebar.text_input("Encrypted Passowrd (Sent to "f"{valid_client_emails[client_id]})", "test", type="password")
 
     if st.sidebar.button("Submit"):
@@ -150,7 +156,10 @@ if st.session_state.get('authenticated'):
     # Search for the financial forecast model using the Client ID and password
     folder_path = os.path.join(os.getcwd())  # Replace with actual folder path
     file_name = f"{client_id}_FFM.xlsx"
+    st.text(file_name)
     file_path = os.path.join(folder_path, file_name)
+    st.text(file_path)
+    industry = valid_client_business_type[client_id]
 
     if os.path.exists(file_path):
         try:            
@@ -205,7 +214,7 @@ if st.session_state.get('authenticated'):
 
             st.sidebar.subheader("Set date range to review")
             selected_review_start_date = st.sidebar.date_input("Select a start date to review:", value=datetime(previous_month.year, 1, 1))
-            selected_review_end_date = st.sidebar.date_input("Select a end date to review:", value=datetime(2024, 12, 31)) #previous_month)
+            selected_review_end_date = st.sidebar.date_input("Select a end date to review:", value=datetime(2025, 12, 31)) #previous_month)
        
 
             if selected_review_start_date.month > 9:
@@ -402,7 +411,7 @@ if st.session_state.get('authenticated'):
                     kpi_dfs.append(kpi_row)
                 else:
                     continue
-            #Sprint(kpi_dfs)
+            #print(kpi_dfs)
 
             # Create the filtered KPIs DataFrame
             kpi_df = pd.concat(
@@ -416,31 +425,10 @@ if st.session_state.get('authenticated'):
             selected_adjusted_end_date = st.sidebar.date_input("Select the end date of the date range to adjust:", value=next_month)
 
             st.sidebar.subheader("Key Performance Indicators")
+            
 
             def adjust_forecast_kpi(dataframe, value, start_date, end_date):
-                """
-                Adjust KPI values in the forecast DataFrame based on user inputs and validate date ranges.
-
-                Parameters:
-                dataframe (pd.DataFrame): The forecast DataFrame with a 'date' column and KPI columns.
-                kpi_name (str): The name of the KPI column to adjust.
-                start_date (str): The start date of the adjustment range (YYYY-MM-DD).
-                end_date (str): The end date of the adjustment range (YYYY-MM-DD).
-                adjustment_percentage (float): Percentage change to apply (e.g., 10 for +10%).
-                review_date_range (tuple): Tuple of start and end dates for the review range (YYYY-MM-DD).
-
-                Returns:
-                pd.DataFrame: Adjusted DataFrame.
-                str: Warning message if date range exceeds the review range.
-                """
-                '''review_start = review_s
-                review_end = review_e'''
-
-
-                '''# Validate date ranges
-                if start_date < review_start or end_date > review_end:
-                    return st.warning("Warning: Adjustment date range exceeds the review date range.")
-                '''
+          
                 valid_adjustable_columns = []
                 for col in dataframe.columns:
                     if datetime.strptime(str(start_date), "%Y-%m-%d") < datetime.strptime(col, "%Y.%m") <datetime.strptime(str(end_date), "%Y-%m-%d"):
@@ -451,39 +439,107 @@ if st.session_state.get('authenticated'):
                     # Apply adjustment
                     if kpi_name in dataframe.index:
                         dataframe.loc[kpi_name, valid_adjustable_columns] = value
-                    '''adjustment = has_sidebar_number_input_changed(kpi_name)[1]
-                    print(dataframe.index)
-                    print(adjustment)
-                    mask = (dataframe[kpi_name] >= start_date) & (dataframe[kpi_name] <= end_date)
-                    dataframe.loc[mask, kpi_name] = adjustment'''
                 
                 return dataframe
             new_kpi_df = kpi_df
-            kpi_toggles = []
+   
+            import shutil
+
+            # ...existing code...
+
+            adjusted_file_path = os.path.join(folder_path, f"{client_id}_Adjusted_FFM.xlsx")
+
+            # Create the adjusted file if it doesn't exist
+            if not os.path.exists(adjusted_file_path):
+                shutil.copy(file_path, adjusted_file_path)
+            def update_excel_kpis(adjusted_file_path, kpi_updates, review_cols):
+                from openpyxl.utils import get_column_letter
+
+                wb = load_workbook(adjusted_file_path)
+                ws = wb['Monthly Detail']
+                header = [str(cell.value).strip() if cell.value is not None else "" for cell in ws[1]]
+                col_indices = {col: header.index(col) for col in review_cols if col in header}
+
+                # Print header and col_indices for debugging
+                print("Header row:", header)
+                print("col_indices:", col_indices)
+
+                # Get merged cell ranges for safety
+                merged_ranges = [str(merge) for merge in ws.merged_cells.ranges]
+
+                for kpi, values in kpi_updates.items():
+                    found_kpi = False
+                    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+                        kpi_cell = str(row[1].value).strip() if row[1].value is not None else ""
+                        if kpi_cell == str(kpi).strip():
+                            found_kpi = True
+                            for col, val in zip(review_cols, values):
+                                if col in col_indices:
+                                    col_idx = col_indices[col]
+                                    cell = row[col_idx]
+                                    cell_ref = f"{get_column_letter(col_idx+1)}{cell.row}"
+                                    # Check if cell is in a merged range
+                                    if any(cell_ref in rng for rng in merged_ranges):
+                                        print(f"Skipping merged cell: {cell_ref}")
+                                        continue
+                                    # Only update if header matches and not None
+                                    if row[col_idx].row > 1 and header[col_idx] == col:
+                                        row[col_idx].value = val
+                                    else:
+                                        print(f"Skipping cell {cell_ref}: header mismatch or not a data cell")
+                    if not found_kpi:
+                        print(f"KPI '{kpi}' not found in sheet.")
+
+                wb.save(adjusted_file_path)
+                wb.close()
+                print("Header:", header)
+                for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+                    print("KPI row value:", row[1].value)
+
+            # Render KPI adjustment inputs ONCE
+            kpi_updates = {}
             for i in client_kpis:
                 if i != "MRR":
-                    if "previous_value" not in st.session_state:
-                        st.session_state.previous_value = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
-                    kpi_toggle = st.sidebar.number_input(i, kpi_df.loc[i, review_end_date])
-
-                    if kpi_toggle != st.session_state.previous_value:
-                        new_kpi_df = adjust_forecast_kpi(kpi_df, kpi_toggle, selected_adjusted_start_date, selected_adjusted_end_date)
-
-                    # kpi_toggles.append(kpi_toggle)
-                else:
-                    continue
-
-            
+                    kpi_updates[i] = [st.sidebar.number_input(i, kpi_df.loc[i, review_end_date], key=f"number_input_{i}")]
 
             if st.sidebar.button("Apply Adjustment"):
-                kpi_df = new_kpi_df
+
+                 # Collect new KPI values from sidebar
+                # Button only triggers update, does not re-render inputs
+                
+                update_excel_kpis(adjusted_file_path, kpi_updates, review_cols)
+                st.success("KPI values updated and formulas recalculated in Excel.")
+                # Force recalculation of formulas in Excel
+                def get_excel_bytes(adjusted_file_path):
+                    wb = load_workbook(adjusted_file_path)
+                    bio = BytesIO()
+                    wb.save(bio)
+                    wb.close()  # Close the workbook after saving
+                    bio.seek(0) # Reset pointer to the start
+                    return bio
+
+                # After updating and saving the workbook:
+                excel_bytes = get_excel_bytes(adjusted_file_path)
+                st.download_button(
+                    label="Download Updated Excel File",
+                    data=excel_bytes,
+                    file_name=os.path.basename(adjusted_file_path)
+                )
+
+                # Reload the DataFrame from Excel to reflect updated formulas
+                new_workbook = pd.ExcelFile(adjusted_file_path)
+                df = new_workbook.parse("Monthly Detail")
+                # ...continue with your DataFrame processing...
+
+        # ...existing code...           
+        # Create the filtered KPIs DataFrame
             
 
             kpi_df.columns = formatted_cols
             kpi_df.index.name = "Legend"
             
             st.write(f"Filtered Data from {formatted_start_date} to {formatted_end_date}:")
-            st.dataframe(kpi_df)
+            st.dataframe(kpi_df.style.format("{:.2f}"))  # Format all numbers in kpi_df to 2 decimal places
 
             # Plot the data
             if not kpi_df.empty:
