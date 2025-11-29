@@ -6,10 +6,10 @@ file_path = 'SandBox_FFM.xlsx'  # Update this path to your file location
 wb = openpyxl.load_workbook(file_path)
 ws = wb['Budget to Actual']
 
-# Step 1: Unmerge the top row (with dates)
-for merged_cells in ws.merged_cells.ranges:
-    if '1' in str(merged_cells):  # Assuming the date is in the top row (row 1)
-        ws.unmerge_cells(str(merged_cells))
+# 1) Unmerge any merged ranges that include the first row (date row)
+for merged in list(ws.merged_cells.ranges):
+    if merged.min_row == 1:
+        ws.unmerge_cells(str(merged))
 
 # Step 2: Find the row containing 'Forecast', 'Actual', and 'Budget'
 forecast_col = None
@@ -30,7 +30,7 @@ for row in ws.iter_rows():
 
 # Step 3: Insert a column to the right of 'Forecast' and 'Actual'
 ws.insert_cols(forecast_col + 1)
-ws.insert_cols(actual_col + 2)  # Accounting for the shift due to the previous insertion
+#ws.insert_cols(actual_col + 2)  # Accounting for the shift due to the previous insertion
 
 # Step 4: Copy formulas from the 'Actual' column to the new column
 for row in range(2, ws.max_row + 1):  # Assuming data starts from row 2

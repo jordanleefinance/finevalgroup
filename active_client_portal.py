@@ -161,6 +161,68 @@ if st.session_state.get('authenticated'):
     st.text(file_path)
     industry = valid_client_business_type[client_id]
 
+    # --- Upload an Excel file and run update_monthly_detail processor ---
+    from pathlib import Path
+
+    # try the exact import the script you asked for, fallback to common variant
+    try:
+        from update_monthly_detail_V1 import ExcelProcess  # user's requested import
+    except Exception:
+        try:
+            from update_monthly_detail_V1 import ExcelProcessor as ExcelProcess
+        except Exception:
+            ExcelProcess = None
+
+    st.sidebar.markdown("### Upload an Excel file to run Monthly Detail update")
+    uploaded_file = st.sidebar.file_uploader("Upload Excel (.xlsx/.xlsm)", type=["xlsx", "xlsm"])
+    upload_password = st.sidebar.text_input("Password (if encrypted)", type="password")
+
+    if uploaded_file:
+        upload_path = os.path.join(os.getcwd(), uploaded_file.name)
+        # save uploaded file to workspace
+        with open(upload_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        st.sidebar.success(f"Saved upload to: {upload_path}")
+
+        if ExcelProcess is None:
+            st.sidebar.error("Excel processing class not found. Check module name/update_monthly_detail file.")
+        else:
+            if st.sidebar.button("Run Monthly Detail Update"):
+                proc = ExcelProcess(upload_path)
+
+                # try to remove password (handle both signatures)
+                try:
+                    try:
+                        proc.remove_password(upload_password)
+                    except TypeError:
+                        proc.remove_password()
+                except Exception as e:
+                    st.sidebar.error(f"Failed to remove password / prepare file: {e}")
+                    raise
+
+                # run the copy/format/formula step (handle optional arg)
+                try:
+                    try:
+                        proc.copy_formatting_and_formulas(target_date=None)
+                    except TypeError:
+                        proc.copy_formatting_and_formulas()
+                except Exception as e:
+                    st.sidebar.error(f"Processing failed: {e}")
+                    raise
+
+                # determine output path (class should set unprotected_file_path)
+                out_path = getattr(proc, "unprotected_file_path", upload_path)
+                if not os.path.exists(out_path):
+                    st.sidebar.error(f"Expected output not found: {out_path}")
+                else:
+                    with open(out_path, "rb") as f:
+                        st.download_button(
+                            label="Download Updated Excel File",
+                            data=f,
+                            file_name=os.path.basename(out_path),
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+
     if os.path.exists(file_path):
         try:            
             workbook = load_workbook(filename=file_path, data_only=True, read_only=True, keep_vba=True)

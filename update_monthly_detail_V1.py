@@ -62,11 +62,13 @@ class ExcelProcessor:
                     column_letter = get_column_letter(column_index)
 
                     # Safely calculate previous and next column letters
+                    pre_pre_column_letter = get_column_letter(column_index - 2) if column_index > 2 else None
                     pre_column_letter = get_column_letter(column_index - 1) if column_index > 1 else None
                     post_column_letter = get_column_letter(column_index + 1)
 
                     print(f"Found date {target_date} in column {column_letter}.")
                     return (
+                        f"{pre_pre_column_letter}:{pre_pre_column_letter}" if pre_pre_column_letter else None,
                         f"{pre_column_letter}:{pre_column_letter}" if pre_column_letter else None,
                         f"{column_letter}:{column_letter}",
                         f"{post_column_letter}:{post_column_letter}",
@@ -85,7 +87,7 @@ class ExcelProcessor:
             if result is None:
                 raise ValueError("Date not found in the specified row.")
 
-            pre_source, source, target = result
+            pre_pre_source, pre_source, source, target = result
 
             # Validate column ranges
             if not source or not target:
@@ -94,16 +96,49 @@ class ExcelProcessor:
             # Load the workbook and select the sheet
             workbook = openpyxl.load_workbook(self.unprotected_file_path)
             sheet = workbook[sheet_name]
+            from copy import copy
+            '''data_start_row = 5  # Assuming data starts from row 5
+            max_row = sheet.max_row'''
+
+                
+            for source_cell, target_cell in zip(sheet[source], sheet[target]):
+                if source_cell.value == target_date:
+                    continue  # Skip copying if the target cell is the date header
+                else:
+                    target_cell.value = source_cell.value
+                    target_cell.number_format = source_cell.number_format
+                    target_cell.font = copy(source_cell.font)
+                    #target_cell.fill = copy(source_cell.fill)
+                    target_cell.border = copy(source_cell.border)
+                    target_cell.alignment = copy(source_cell.alignment)
+
 
             # Copy formatting and formulas
             if pre_source:
                 for pre_source_cell, source_cell in zip(sheet[pre_source], sheet[source]):
-                    source_cell.value = pre_source_cell.value
-                    source_cell.number_format = pre_source_cell.number_format
+                    if source_cell.value == target_date:
+                        continue  # Skip copying if the target cell is the date header
+                    else:
+                        source_cell.value = pre_source_cell.value
+                        source_cell.number_format = pre_source_cell.number_format
+                        #source_cell.font = copy(pre_source_cell.font)
+                        #source_cell.fill = copy(pre_source_cell.fill)
+                        source_cell.border = copy(pre_source_cell.border)
+                        source_cell.alignment = copy(pre_source_cell.alignment)
 
-            for source_cell, target_cell in zip(sheet[source], sheet[target]):
-                target_cell.value = source_cell.value
-                target_cell.number_format = source_cell.number_format
+            if pre_pre_source:
+                for pre_pre_source_cell, pre_source_cell in zip(sheet[pre_pre_source], sheet[pre_source]):
+                    if pre_source_cell.value == target_date:
+                        continue  # Skip copying if the target cell is the date header
+                    else:
+                        # pre_source_cell.value = pre_pre_source_cell.value
+                        pre_source_cell.number_format = pre_pre_source_cell.number_format
+                        #pre_source_cell.font = copy(pre_pre_source_cell.font)
+                        #pre_source_cell.fill = copy(pre_pre_source_cell.fill)
+                        pre_source_cell.border = copy(pre_pre_source_cell.border)
+                        pre_source_cell.alignment = copy(pre_pre_source_cell.alignment)
+
+            
 
             # Save changes
             workbook.save(self.unprotected_file_path)
