@@ -4,11 +4,12 @@ from datetime import datetime, timedelta
 from openpyxl.utils import get_column_letter, column_index_from_string
 
 class ExcelProcessor:
-    def __init__(self, original_file_path):
+    def __init__(self, original_file_path, close_month=None):
         
         self.original_file_path = os.path.abspath(original_file_path)
+        self.close_month = close_month
         self.unprotected_file_path = self._generate_unprotected_file_path()
-        print(self.original_file_path)
+        #print(self.original_file_path)
 
         # immediate sanity checks with helpful debug info
         if not os.path.exists(self.original_file_path):
@@ -22,7 +23,12 @@ class ExcelProcessor:
 
     def _generate_unprotected_file_path(self):
         base, ext = os.path.splitext(self.original_file_path)
-        return f"{base}_Unprotected{ext}"
+        return f"{base}_Updated{ext}"
+    
+    def update_budget_to_actual(self, close_month=None):
+        from update_budget_to_actual import BudgetToActualUpdater
+        updater = BudgetToActualUpdater(self.original_file_path, new_file_path=self.unprotected_file_path, close_month=close_month)
+        updater.update_budget_to_actual(self.original_file_path, new_file_path=self.unprotected_file_path, close_month=close_month)
 
     def remove_password(self):
         try:
@@ -108,7 +114,7 @@ class ExcelProcessor:
                     target_cell.value = source_cell.value
                     target_cell.number_format = source_cell.number_format
                     target_cell.font = copy(source_cell.font)
-                    #target_cell.fill = copy(source_cell.fill)
+                    target_cell.fill = copy(source_cell.fill)
                     target_cell.border = copy(source_cell.border)
                     target_cell.alignment = copy(source_cell.alignment)
 
@@ -121,8 +127,8 @@ class ExcelProcessor:
                     else:
                         source_cell.value = pre_source_cell.value
                         source_cell.number_format = pre_source_cell.number_format
-                        #source_cell.font = copy(pre_source_cell.font)
-                        #source_cell.fill = copy(pre_source_cell.fill)
+                        source_cell.font = copy(pre_source_cell.font)
+                        source_cell.fill = copy(pre_source_cell.fill)
                         source_cell.border = copy(pre_source_cell.border)
                         source_cell.alignment = copy(pre_source_cell.alignment)
 
@@ -133,7 +139,7 @@ class ExcelProcessor:
                     else:
                         # pre_source_cell.value = pre_pre_source_cell.value
                         pre_source_cell.number_format = pre_pre_source_cell.number_format
-                        #pre_source_cell.font = copy(pre_pre_source_cell.font)
+                        pre_source_cell.font = copy(pre_pre_source_cell.font)
                         #pre_source_cell.fill = copy(pre_pre_source_cell.fill)
                         pre_source_cell.border = copy(pre_pre_source_cell.border)
                         pre_source_cell.alignment = copy(pre_pre_source_cell.alignment)
@@ -148,15 +154,17 @@ class ExcelProcessor:
 
 # Usage example
 if __name__ == "__main__":
+    month = datetime(2024, 10, 31)
+
     # Path to the original Excel file
-    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\SandBox_FFM_Updated.xlsx'
-    print(os.getcwd())
+    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\EI_FFM.xlsx'
 
     # Initialize the processor
     processor = ExcelProcessor(original_file_path)
-
+    # Update budget to actual
+    processor.update_budget_to_actual(close_month=month)
     # Remove password protection
     processor.remove_password()
 
     # Copy formatting and formulas
-    processor.copy_formatting_and_formulas(target_date=datetime(2024, 8, 31))
+    processor.copy_formatting_and_formulas(target_date=month)
