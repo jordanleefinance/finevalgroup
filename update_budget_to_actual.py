@@ -317,7 +317,7 @@ class BudgetToActualUpdater:
         try:
             os.startfile(new_file_path)  # opens in default app (Excel on Windows)
         except Exception as e:
-            with open(new_file_path, 'rb') as f:
+            with open(new_file_path, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") as f:
                 st.download_button('Download updated file', f, file_name=os.path.basename(new_file_path))
                 print(f"Please open the file manually: {new_file_path}")
         timeout = 180  # seconds, adjust as needed
