@@ -126,7 +126,7 @@ class BudgetToActualUpdater:
         for orginal_cell, new_cell in zip(ws[ get_column_letter(actual_col) ], ws[ get_column_letter(new_actuals_col) ]):
             row = orginal_cell.row
             if orginal_cell.row == target_row:
-                original_cell_value = ws.cell(row=target_row, column=actual_col+1, value=last_of_previous_month.strftime('%m/%d/%Y')).value
+                original_cell_value = ws.cell(row=target_row, column=actual_col+1, value=last_of_previous_month.strftime('%#m/%d/%Y')).value
             else:
                 original_cell_value = ws_data_only.cell(row=row, column=actual_col).value
             ws.cell(row=row, column=actual_col+1).value = original_cell_value
@@ -173,13 +173,13 @@ class BudgetToActualUpdater:
         for row in range(target_row, ws.max_row + 1):  # Start AFTER the header row
             if row == target_row:
                 ws.cell(row=row, column=new_forecast_col).value = 'Forecast'
-                ws.cell(row=row, column=new_forecast_col-1).value = last_of_previous_month.strftime('%m/%d/%Y')
+                ws.cell(row=row, column=new_forecast_col-1).value = last_of_previous_month.strftime('%#m/%d/%Y')
 
 
         for row in range(target_row, ws.max_row + 1):  # Start AFTER the header row
             if row == target_row:
                 ws.cell(row=row, column=budget_col+3).value = 'Budget'
-                ws.cell(row=row, column=budget_col+2).value = last_of_previous_month.strftime('%m/%d/%Y')
+                ws.cell(row=row, column=budget_col+2).value = last_of_previous_month.strftime('%#m/%d/%Y')
 
 
 

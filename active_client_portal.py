@@ -35,7 +35,8 @@ valid_clients = {
     "DMSF": "DMSF2024!",
     "IA": "IA2024!",
     "LB": "LB2024!",
-    "JMM": "JMM2025!"
+    "JMM": "JMM2025!",
+    'FINEVAL': 'FINEVAL2025!'
 }
 valid_client_names = {
     "EI": "Est Institute",
@@ -44,7 +45,8 @@ valid_client_names = {
     "DMSF": "Darnerien McCants Sports & Fitness",
     "IA": "Intentionally Amazing",
     "LB": "La Bete LLC",
-    "JMM": "JMM Group LLC"
+    "JMM": "JMM Group LLC",
+    'FINEVAL': 'Fineval Group LLC'
 }
 valid_client_emails = {
     "EI": "jordanlee2017@gmail.com",
@@ -53,7 +55,8 @@ valid_client_emails = {
     "DMSF": "jordanlee2017@gmail.com",
     "IA": "jordanlee2017@gmail.com",
     "LB": "jordanlee2017@gmail.com",
-    "JMM": "jordanlee2017@gmail.com"
+    "JMM": "jordanlee2017@gmail.com",
+    'FINEVAL': 'jordanlee2017@gmail.com'
 }
 
 # Assign each client with an industry based on business type
@@ -64,7 +67,8 @@ valid_client_business_type = {
     "DMSF": "Fitness Trainer",
     "IA": "Nail Salon",
     "LB": "Barbershop",
-    "JMM": "Business Consulting Services"
+    "JMM": "Business Consulting Services",
+    'FINEVAL': 'Business Consulting Services'
 
 }
 
@@ -166,16 +170,23 @@ if st.session_state.get('authenticated'):
 
     # try the exact import the script you asked for, fallback to common variant
     try:
-        from update_monthly_detail_V1 import ExcelProcess  # user's requested import
+        from update_monthly_detail_V1 import ExcelProcessor  # user's requested import
+        from update_budget_to_actual import BudgetToActualUpdater
+        from copy_paste_forecast import ForecastUpdater
     except Exception:
         try:
-            from update_monthly_detail_V1 import ExcelProcessor as ExcelProcess
+            from update_monthly_detail_V1 import ExcelProcessor as ExcelProcessor
+            from update_budget_to_actual import BudgetToActualUpdater as BudgetToActualUpdater
+            from copy_paste_forecast import ForecastUpdater as ForecastUpdater
         except Exception:
-            ExcelProcess = None
+            ExcelProcessor = None
+            BudgetToActualUpdater = None
+            ForecastUpdater = None
 
     st.sidebar.markdown("### Upload an Excel file to run Monthly Detail update")
-    uploaded_file = st.sidebar.file_uploader("Upload Excel (.xlsx/.xlsm)", type=["xlsx", "xlsm"])
+    uploaded_file = st.sidebar.file_uploader("Upload FFM (.xlsx/.xlsm)", type=["xlsx", "xlsm"])
     upload_password = st.sidebar.text_input("Password (if encrypted)", type="password")
+    upload_date = st.sidebar.date_input("Close Date (defaults to last month end)", value=previous_month)
 
     if uploaded_file:
         upload_path = os.path.join(os.getcwd(), uploaded_file.name)
@@ -184,11 +195,11 @@ if st.session_state.get('authenticated'):
             f.write(uploaded_file.getbuffer())
         st.sidebar.success(f"Saved upload to: {upload_path}")
 
-        if ExcelProcess is None:
-            st.sidebar.error("Excel processing class not found. Check module name/update_monthly_detail file.")
+        if ExcelProcessor is None:
+            st.sidebar.error("FFM processing class not found. Check module name/update_monthly_detail file.")
         else:
             if st.sidebar.button("Run Monthly Detail Update"):
-                proc = ExcelProcess(upload_path)
+                proc = ExcelProcessor(upload_path)
 
                 # try to remove password (handle both signatures)
                 try:
@@ -199,11 +210,19 @@ if st.session_state.get('authenticated'):
                 except Exception as e:
                     st.sidebar.error(f"Failed to remove password / prepare file: {e}")
                     raise
-
+                try:
+                    try:
+                        proc.update_budget_to_actual(close_month=upload_date)
+                    except TypeError:
+                        proc.update_budget_to_actual(close_month=upload_date)
+                except Exception as e:
+                    st.sidebar.error(f"Failed to update budget to actuals / prepare file: {e}")
+                    raise
+                
                 # run the copy/format/formula step (handle optional arg)
                 try:
                     try:
-                        proc.copy_formatting_and_formulas(target_date=None)
+                        proc.copy_formatting_and_formulas(target_date=upload_date)
                     except TypeError:
                         proc.copy_formatting_and_formulas()
                 except Exception as e:
