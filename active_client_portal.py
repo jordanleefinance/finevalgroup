@@ -167,9 +167,8 @@ if st.session_state.get('authenticated'):
 
     # --- Upload an Excel file and run update_monthly_detail processor ---
     from pathlib import Path
-    monthly_detail_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\update_monthly_detail_V1.py'
-    from monthly_detail_path import ExcelProcessor
-    # try the exact import the script you asked for, fallback to common variant
+
+    '''# try the exact import the script you asked for, fallback to common variant
     try:
         from update_monthly_detail_V1 import ExcelProcessor  # user's requested import
         from update_budget_to_actual import BudgetToActualUpdater
@@ -240,7 +239,7 @@ if st.session_state.get('authenticated'):
                         data=f,
                         file_name=os.path.basename(out_path),
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
+                    )'''
 
     if os.path.exists(file_path):
         try:            
@@ -671,3 +670,47 @@ if st.session_state.get('authenticated'):
 
 else:
     st.write("Please enter your credentials to proceed.")
+
+if __name__ == "__main__":
+    st.set_page_config(page_title="JMM Client Portal", layout="wide")
+    proc = ExcelProcessor(orginal_file_path=uploaded_file, close_month=upload_date)
+    # try to remove password (handle both signatures)
+    try:
+        try:
+            proc.remove_password(upload_password)
+        except TypeError:
+            proc.remove_password()
+    except Exception as e:
+        st.sidebar.error(f"Failed to remove password / prepare file: {e}")
+        raise
+    try:
+        try:
+            proc.update_budget_to_actual(close_month=upload_date)
+        except TypeError:
+            proc.update_budget_to_actual(close_month=upload_date)
+    except Exception as e:
+        st.sidebar.error(f"Failed to update budget to actuals / prepare file: {e}")
+        raise
+    
+    # run the copy/format/formula step (handle optional arg)
+    try:
+        try:
+            proc.copy_formatting_and_formulas(target_date=upload_date)
+        except TypeError:
+            proc.copy_formatting_and_formulas()
+    except Exception as e:
+        st.sidebar.error(f"Processing failed: {e}")
+        raise
+
+    # determine output path (class should set unprotected_file_path)
+    out_path = getattr(proc, "unprotected_file_path", upload_path)
+    if not os.path.exists(out_path):
+        st.sidebar.error(f"Expected output not found: {out_path}")
+    else:
+        with open(out_path, "rb") as f:
+            st.download_button(
+                label="Download Updated Excel File",
+                data=f,
+                file_name=os.path.basename(out_path),
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
