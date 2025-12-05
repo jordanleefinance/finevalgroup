@@ -195,52 +195,52 @@ if st.session_state.get('authenticated'):
             f.write(uploaded_file.getbuffer())
         st.sidebar.success(f"Saved upload to: {upload_path}")
 
-        if ExcelProcessor is None:
-            st.sidebar.error("FFM processing class not found. Check module name/update_monthly_detail file.")
-        else:
-            if st.sidebar.button("Run Monthly Detail Update"):
-                proc = ExcelProcessor(upload_path)
+        '''if ExcelProcessor is None:
+            st.sidebar.error("FFM processing class not found. Check module name/update_monthly_detail file.")'''
 
-                # try to remove password (handle both signatures)
-                try:
-                    try:
-                        proc.remove_password(upload_password)
-                    except TypeError:
-                        proc.remove_password()
-                except Exception as e:
-                    st.sidebar.error(f"Failed to remove password / prepare file: {e}")
-                    raise
-                try:
-                    try:
-                        proc.update_budget_to_actual(close_month=upload_date)
-                    except TypeError:
-                        proc.update_budget_to_actual(close_month=upload_date)
-                except Exception as e:
-                    st.sidebar.error(f"Failed to update budget to actuals / prepare file: {e}")
-                    raise
-                
-                # run the copy/format/formula step (handle optional arg)
-                try:
-                    try:
-                        proc.copy_formatting_and_formulas(target_date=upload_date)
-                    except TypeError:
-                        proc.copy_formatting_and_formulas()
-                except Exception as e:
-                    st.sidebar.error(f"Processing failed: {e}")
-                    raise
+        if st.sidebar.button("Run Monthly Detail Update"):
+            proc = ExcelProcessor(upload_path)
 
-                # determine output path (class should set unprotected_file_path)
-                out_path = getattr(proc, "unprotected_file_path", upload_path)
-                if not os.path.exists(out_path):
-                    st.sidebar.error(f"Expected output not found: {out_path}")
-                else:
-                    with open(out_path, "rb") as f:
-                        st.download_button(
-                            label="Download Updated Excel File",
-                            data=f,
-                            file_name=os.path.basename(out_path),
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        )
+            # try to remove password (handle both signatures)
+            try:
+                try:
+                    proc.remove_password(upload_password)
+                except TypeError:
+                    proc.remove_password()
+            except Exception as e:
+                st.sidebar.error(f"Failed to remove password / prepare file: {e}")
+                raise
+            try:
+                try:
+                    proc.update_budget_to_actual(close_month=upload_date)
+                except TypeError:
+                    proc.update_budget_to_actual(close_month=upload_date)
+            except Exception as e:
+                st.sidebar.error(f"Failed to update budget to actuals / prepare file: {e}")
+                raise
+            
+            # run the copy/format/formula step (handle optional arg)
+            try:
+                try:
+                    proc.copy_formatting_and_formulas(target_date=upload_date)
+                except TypeError:
+                    proc.copy_formatting_and_formulas()
+            except Exception as e:
+                st.sidebar.error(f"Processing failed: {e}")
+                raise
+
+            # determine output path (class should set unprotected_file_path)
+            out_path = getattr(proc, "unprotected_file_path", upload_path)
+            if not os.path.exists(out_path):
+                st.sidebar.error(f"Expected output not found: {out_path}")
+            else:
+                with open(out_path, "rb") as f:
+                    st.download_button(
+                        label="Download Updated Excel File",
+                        data=f,
+                        file_name=os.path.basename(out_path),
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
 
     if os.path.exists(file_path):
         try:            
