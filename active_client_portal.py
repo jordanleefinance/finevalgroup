@@ -167,7 +167,8 @@ if st.session_state.get('authenticated'):
 
     # --- Upload an Excel file and run update_monthly_detail processor ---
     from pathlib import Path
-    from update_monthly_detail_V1 import ExcelProcessor
+    monthly_detail_path = 'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\update_monthly_detail_V1.py'
+    from monthly_detail_path import ExcelProcessor
     # try the exact import the script you asked for, fallback to common variant
     try:
         from update_monthly_detail_V1 import ExcelProcessor  # user's requested import
