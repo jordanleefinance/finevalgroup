@@ -179,7 +179,7 @@ if st.session_state.get('authenticated'):
             from update_budget_to_actual import BudgetToActualUpdater as BudgetToActualUpdater
             from copy_paste_forecast import ForecastUpdater as ForecastUpdater
         except Exception:
-            ExcelProcessor = None
+            #ExcelProcessor = None
             BudgetToActualUpdater = None
             ForecastUpdater = None
 
