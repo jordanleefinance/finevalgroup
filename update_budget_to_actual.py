@@ -305,6 +305,7 @@ class BudgetToActualUpdater:
         import os
         import time
         import streamlit as st
+        import sys
         #import msvcrt
 
         from copy_paste_forecast import ForecastUpdater
@@ -316,6 +317,9 @@ class BudgetToActualUpdater:
         initial_mtime = os.path.getmtime(new_file_path)
         try:
             os.startfile(new_file_path)  # opens in default app (Excel on Windows)
+        except AttributeError:
+            if sys.platform.startwith("win32"):
+                os.startfile(new_file_path)  # opens in default app (Excel on Windows)
         except Exception as e:
             with open(new_file_path, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") as f:
                 st.download_button('Download updated file', f, file_name=os.path.basename(new_file_path))
