@@ -152,7 +152,7 @@ class ExcelProcessor:
         except Exception as e:
             print(f"An error occurred while copying formatting: {e}")
 
-# Usage example
+'''# Usage example
 if __name__ == "__main__":
     month = datetime(2024, 10, 31)
 
@@ -167,4 +167,4 @@ if __name__ == "__main__":
     processor.remove_password()
 
     # Copy formatting and formulas
-    processor.copy_formatting_and_formulas(target_date=month)
+    processor.copy_formatting_and_formulas(target_date=month)'''

@@ -324,7 +324,7 @@ class BudgetToActualUpdater:
             with open(new_file_path, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") as f:
                 st.download_button('Download updated file', f, file_name=os.path.basename(new_file_path))
                 print(f"Please open the file manually: {new_file_path}")
-        timeout = 180  # seconds, adjust as needed
+        timeout = 60  # seconds, adjust as needed
         start = time.time()
         print(f"Opened {new_file_path}. Please save & close Excel, or press Enter here when done. Waiting up to {timeout}s...")
 
