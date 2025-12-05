@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from openpyxl.utils import get_column_letter, column_index_from_string
 
 class ExcelProcessor:
-    def __init__(self, original_file_path, close_month=None):
+    def __init__(self, original_file_path=None, close_month=None):
         
         self.original_file_path = os.path.abspath(original_file_path)
         self.close_month = close_month
