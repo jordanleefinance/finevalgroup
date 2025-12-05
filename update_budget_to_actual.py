@@ -304,6 +304,7 @@ class BudgetToActualUpdater:
 
         import os
         import time
+        import streamlit as st
         #import msvcrt
 
         from copy_paste_forecast import ForecastUpdater
@@ -313,8 +314,12 @@ class BudgetToActualUpdater:
         # This waits for either: a change to the file modification time, the user pressing Enter,
         # or the timeout (seconds) being reached.
         initial_mtime = os.path.getmtime(new_file_path)
-        os.startfile(new_file_path)  # opens in default app (Excel on Windows)
-
+        try:
+            os.startfile(new_file_path)  # opens in default app (Excel on Windows)
+        except Exception as e:
+            with open(new_file_path, 'rb') as f:
+                st.download_button('Download updated file', f, file_name=os.path.basename(new_file_path))
+                print(f"Please open the file manually: {new_file_path}")
         timeout = 180  # seconds, adjust as needed
         start = time.time()
         print(f"Opened {new_file_path}. Please save & close Excel, or press Enter here when done. Waiting up to {timeout}s...")
