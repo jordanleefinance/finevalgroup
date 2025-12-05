@@ -304,7 +304,7 @@ class BudgetToActualUpdater:
 
         import os
         import time
-        import msvcrt
+        #import msvcrt
 
         from copy_paste_forecast import ForecastUpdater
         updater = ForecastUpdater(new_file_path)
@@ -321,11 +321,11 @@ class BudgetToActualUpdater:
 
         while True:
             # User pressed a key?
-            if msvcrt.kbhit():
+            '''if msvcrt.kbhit():
                 ch = msvcrt.getwch()
                 if ch in ("\r", "\n"):
                     print("User confirmed via Enter. Continuing...")
-                    break
+                    break'''
 
             # File modification detected?
             try:
