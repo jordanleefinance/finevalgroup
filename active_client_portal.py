@@ -199,8 +199,10 @@ if st.session_state.get('authenticated'):
             st.sidebar.error("FFM processing class not found. Check module name/update_monthly_detail file.")'''
 
         if st.sidebar.button("Run Monthly Detail Update"):
-            proc = ExcelProcessor(original_file_path=upload_path)
-
+            try:
+                proc = ExcelProcessor(original_file_path=upload_path, close_month=upload_date)
+            except TypeError:
+                proc = ExcelProcessor(upload_path)
             # try to remove password (handle both signatures)
             try:
                 try:
