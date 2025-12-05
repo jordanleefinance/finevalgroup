@@ -168,7 +168,7 @@ if st.session_state.get('authenticated'):
     # --- Upload an Excel file and run update_monthly_detail processor ---
     from pathlib import Path
 
-    '''# try the exact import the script you asked for, fallback to common variant
+    # try the exact import the script you asked for, fallback to common variant
     try:
         from update_monthly_detail_V1 import ExcelProcessor  # user's requested import
         from update_budget_to_actual import BudgetToActualUpdater
@@ -195,11 +195,11 @@ if st.session_state.get('authenticated'):
             f.write(uploaded_file.getbuffer())
         st.sidebar.success(f"Saved upload to: {upload_path}")
 
-        if ExcelProcessor is None:
-            st.sidebar.error("FFM processing class not found. Check module name/update_monthly_detail file.")
+        '''if ExcelProcessor is None:
+            st.sidebar.error("FFM processing class not found. Check module name/update_monthly_detail file.")'''
 
         if st.sidebar.button("Run Monthly Detail Update"):
-            proc = ExcelProcessor(upload_path, upload_date)
+            proc = ExcelProcessor(uploaded_file, upload_date)
             # try to remove password (handle both signatures)
             try:
                 try:
@@ -239,7 +239,7 @@ if st.session_state.get('authenticated'):
                         data=f,
                         file_name=os.path.basename(out_path),
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )'''
+                    )
 
     if os.path.exists(file_path):
         try:            
@@ -671,7 +671,13 @@ if st.session_state.get('authenticated'):
 else:
     st.write("Please enter your credentials to proceed.")
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
+
+    st.sidebar.markdown("### Upload an Excel file to run Monthly Detail update")
+    uploaded_file = st.sidebar.file_uploader("Upload FFM (.xlsx/.xlsm)", type=["xlsx", "xlsm"])
+    upload_password = st.sidebar.text_input("Password (if encrypted)", type="password")
+    upload_date = st.sidebar.date_input("Close Date (defaults to last month end)", value=previous_month)
+
     st.set_page_config(page_title="JMM Client Portal", layout="wide")
     proc = ExcelProcessor(orginal_file_path=uploaded_file, close_month=upload_date)
     # try to remove password (handle both signatures)
@@ -713,4 +719,4 @@ if __name__ == "__main__":
                 data=f,
                 file_name=os.path.basename(out_path),
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+            )'''
