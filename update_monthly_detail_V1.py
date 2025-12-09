@@ -154,7 +154,7 @@ class ExcelProcessor:
 
 # Usage example
 if __name__ == "__main__":
-    month = datetime(2024, 8, 31)
+    month = datetime(2025, 11, 30)
 
     # Path to the original Excel file
     original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\EI_FFM_2025.xlsx'
