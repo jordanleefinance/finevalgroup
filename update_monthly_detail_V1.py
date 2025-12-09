@@ -1,7 +1,7 @@
 import openpyxl
 import os
 from datetime import datetime, timedelta
-from openpyxl.utils import get_column_letter, column_index_from_string
+from openpyxl.utils import get_column_letter
 
 class ExcelProcessor:
     def __init__(self, original_file_path, close_month=None):
@@ -72,7 +72,7 @@ class ExcelProcessor:
                     pre_column_letter = get_column_letter(column_index - 1) if column_index > 1 else None
                     post_column_letter = get_column_letter(column_index + 1)
 
-                    print(f"Found date {target_date} in column {column_letter}.")
+                    #print(f"Found date {target_date} in column {column_letter}.")
                     return (
                         f"{pre_pre_column_letter}:{pre_pre_column_letter}" if pre_pre_column_letter else None,
                         f"{pre_column_letter}:{pre_column_letter}" if pre_column_letter else None,
@@ -80,13 +80,26 @@ class ExcelProcessor:
                         f"{post_column_letter}:{post_column_letter}",
                     )
 
-            print(f"Date {target_date.date()} not found in row {search_row}.")
+            #print(f"Date {target_date.date()} not found in row {search_row}.")
             return None
         except Exception as e:
             print(f"An error occurred while finding the date: {e}")
             return None
 
     def copy_formatting_and_formulas(self, sheet_name='Monthly Detail', target_date=None):
+        def shifted_formula(formula, col_shift=1, row_shift=0):
+            import re
+            from openpyxl.utils.cell import coordinate_from_string, get_column_letter, column_index_from_string
+
+            def replace(match):
+                cell = match.group(0)
+                col, row = coordinate_from_string(cell)
+                new_col = get_column_letter(column_index_from_string(col) + col_shift)
+                new_row = row + row_shift
+                return f"{new_col}{new_row}"
+
+            # Match A1-style references
+            return re.sub(r'\$?[A-Za-z]+\$?\d+', replace, formula)
         try:
             # Find the source and target columns
             result = self.find_date_in_row(sheet_name, target_date=target_date)
@@ -106,10 +119,32 @@ class ExcelProcessor:
             '''data_start_row = 5  # Assuming data starts from row 5
             max_row = sheet.max_row'''
 
-                
+            date_row = 100  # Initialize date_row
+            # Copy formatting and formulas from source to target
             for source_cell, target_cell in zip(sheet[source], sheet[target]):
+                #import re
+                # Find all cell references in the formula
+                #re.findall(r'\$?[A-Za-z]+\$?\d+', source_cell.value if '$' in str(source_cell.value) else ''))
+                #print(source_cell.row, source_cell.column, target_date.row, target_date.column)
                 if source_cell.value == target_date:
+                    date_row = source_cell.row
                     continue  # Skip copying if the target cell is the date header
+                if source_cell.row > date_row and source_cell.data_type == 'f':  # If the source cell has a formula'
+                   if "$" in source_cell.value:
+                       #print(source_cell.value)
+                       target_cell.number_format = source_cell.number_format
+                       target_cell.font = copy(source_cell.font)
+                       target_cell.fill = copy(source_cell.fill)
+                       target_cell.border = copy(source_cell.border)
+                       target_cell.alignment = copy(source_cell.alignment)
+                       continue  # Skip copying if the formula contains a dollar sign
+                   new_formula = shifted_formula(source_cell.value, col_shift=1, row_shift=0)
+                   target_cell.value = new_formula
+                   target_cell.number_format = source_cell.number_format
+                   target_cell.font = copy(source_cell.font)
+                   target_cell.fill = copy(source_cell.fill)
+                   target_cell.border = copy(source_cell.border)
+                   target_cell.alignment = copy(source_cell.alignment)
                 else:
                     target_cell.value = source_cell.value
                     target_cell.number_format = source_cell.number_format
@@ -123,7 +158,24 @@ class ExcelProcessor:
             if pre_source:
                 for pre_source_cell, source_cell in zip(sheet[pre_source], sheet[source]):
                     if source_cell.value == target_date:
+                        date_row = source_cell.row
                         continue  # Skip copying if the target cell is the date header
+                    if pre_source_cell.row > date_row and pre_source_cell.data_type == 'f':  # If the source cell has a formula'
+                        if "$" in pre_source_cell.value:
+                            #print(pre_source_cell.value)
+                            source_cell.number_format = pre_source_cell.number_format
+                            source_cell.font = copy(pre_source_cell.font)
+                            source_cell.fill = copy(pre_source_cell.fill)
+                            source_cell.border = copy(pre_source_cell.border)
+                            source_cell.alignment = copy(pre_source_cell.alignment)
+                            continue  # Skip copying if the formula contains a dollar sign
+                        new_formula = shifted_formula(pre_source_cell.value, col_shift=1, row_shift=0)
+                        source_cell.value = new_formula
+                        source_cell.number_format = pre_source_cell.number_format
+                        source_cell.font = copy(pre_source_cell.font)
+                        source_cell.fill = copy(pre_source_cell.fill)
+                        source_cell.border = copy(pre_source_cell.border)
+                        source_cell.alignment = copy(pre_source_cell.alignment)
                     else:
                         source_cell.value = pre_source_cell.value
                         source_cell.number_format = pre_source_cell.number_format
@@ -157,12 +209,12 @@ if __name__ == "__main__":
     month = datetime(2025, 11, 30)
 
     # Path to the original Excel file
-    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\EI_FFM_2025.xlsx'
+    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\IA_FFM_2025.xlsx'
 
     # Initialize the processor
     processor = ExcelProcessor(original_file_path)
     # Update budget to actual
-    processor.update_budget_to_actual(close_month=month)
+    #processor.update_budget_to_actual(close_month=month)
     # Remove password protection
     processor.remove_password()
 

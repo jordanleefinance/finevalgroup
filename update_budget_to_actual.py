@@ -71,7 +71,7 @@ class BudgetToActualUpdater:
             if forecast_col and actual_col and budget_col:
                 target_row = cell.row
                 break
-        print(f"Found: Forecast={forecast_col}, Actual={actual_col}, Budget={budget_col}, Target Row={target_row}")
+        #print(f"Found: Forecast={forecast_col}, Actual={actual_col}, Budget={budget_col}, Target Row={target_row}")
 
         # Step 3: Insert a column to the right of 'Forecast' and 'Actual'
         ws.insert_cols(forecast_col + 1)
@@ -88,7 +88,7 @@ class BudgetToActualUpdater:
             ws = wb['Actual vs. Forecast']
         #actual_col += 1  # Adjust actual_col due to previous insertion
         #ws.insert_cols(actual_col + 2)  # Accounting for the shift due to the previous insertion
-        print(f"After insert: Forecast col={forecast_col}, New Forecast col={new_forecast_col}, Actual col={actual_col}, New Actual col={new_actuals_col}")
+        #print(f"After insert: Forecast col={forecast_col}, New Forecast col={new_forecast_col}, Actual col={actual_col}, New Actual col={new_actuals_col}")
 
         # Step 4: Copy formulas and ALL formatting from the 'Actual' column to the new column
         
@@ -137,8 +137,8 @@ class BudgetToActualUpdater:
         if date_header_range:
             header_row_for_date = date_header_range.min_row
             header_col_for_date = date_header_range.min_col
-            print(f"Updating date in row {header_row_for_date}, column {header_col_for_date}")
-            print(f"Setting date in row {header_row_for_date}, column {new_actuals_col}")
+           #print(f"Updating date in row {header_row_for_date}, column {header_col_for_date}")
+            #print(f"Setting date in row {header_row_for_date}, column {new_actuals_col}")
             ws.cell(row=header_row_for_date, column=header_col_for_date, value=close_month)  # Example: setting to July 31, 2024
         else:
             # Fallback if no merged range found
@@ -200,7 +200,7 @@ class BudgetToActualUpdater:
             elif cell_value == 'Variance (Budget)':
                 variance_budget_col = col
 
-        print(f"Found: Variance (Forecast) col={variance_forecast_col}, Variance (Budget) col={variance_budget_col}")
+        #print(f"Found: Variance (Forecast) col={variance_forecast_col}, Variance (Budget) col={variance_budget_col}")
 
         # Update formulas in 'Variance (Forecast)' column
         # Formula should be: Actual - Forecast
@@ -273,7 +273,7 @@ class BudgetToActualUpdater:
                 date_columns.append(col)
 
         date_columns = sorted(date_columns)
-        print("Detected date columns:", date_columns)
+        #print("Detected date columns:", date_columns)
 
 
         # Group only consecutive date columns
@@ -306,7 +306,7 @@ class BudgetToActualUpdater:
         import time
         import streamlit as st
         import sys
-        #import msvcrt
+        import msvcrt
 
         from copy_paste_forecast import ForecastUpdater
         updater = ForecastUpdater(new_file_path)
@@ -330,11 +330,11 @@ class BudgetToActualUpdater:
 
         while True:
             # User pressed a key?
-            '''if msvcrt.kbhit():
+            if msvcrt.kbhit():
                 ch = msvcrt.getwch()
                 if ch in ("\r", "\n"):
                     print("User confirmed via Enter. Continuing...")
-                    break'''
+                    break
 
             # File modification detected?
             try:
