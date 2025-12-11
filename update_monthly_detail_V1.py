@@ -214,7 +214,7 @@ if __name__ == "__main__":
     # Initialize the processor
     processor = ExcelProcessor(original_file_path)
     # Update budget to actual
-    #processor.update_budget_to_actual(close_month=month)
+    processor.update_budget_to_actual(close_month=month)
     # Remove password protection
     processor.remove_password()
 

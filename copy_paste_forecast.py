@@ -53,9 +53,9 @@ class ForecastUpdater:
         # find original Forecast column index in the data-only workbook (header row = target_row)
         orig_forecast_col = None
         for c in range(1, ws_data_only.max_column + 1):
-            if ws_data_only.cell(row=target_row, column=c).value == 'Forecast':
+            if ws_data_only.cell(row=target_row, column=c).value == 'Actual':
                 orig_forecast_col = c + 1  # Original Forecast is 2 columns after Actual
-                #print(f"Found original Forecast col in data-only sheet: {orig_forecast_col}")
+                print(f"Found original Forecast col in data-only sheet: {orig_forecast_col}")
         if orig_forecast_col is None:
             orig_forecast_col = actual_col # fallback
 
@@ -66,3 +66,11 @@ class ForecastUpdater:
         wb_data_only.close()
         wb.save(file_path)
         wb.close()
+
+# Usage example
+if __name__ == "__main__":
+
+    # Path to the original Excel file
+    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\IA_FFM_2025_B2A.xlsx'
+    updater = ForecastUpdater(original_file_path)
+    updater.update_forecast_to_values(original_file_path)

@@ -20,7 +20,7 @@ class BudgetToActualUpdater:
     
     def update_budget_to_actual(self, file_path, new_file_path = None, close_month=datetime.today()):
         # Load the workbook and select the 'Budget to Actual' tab
-        #file_path = 'SandBox_FFM.xlsx'  # Update this path to your file location
+        #file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\IA_FFM_2025.xlsx'  # Update this path to your file location
         wb = openpyxl.load_workbook(file_path)
         try:
             ws = wb['Budget to Actual']
@@ -324,7 +324,7 @@ class BudgetToActualUpdater:
             with open(new_file_path, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") as f:
                 st.download_button('Download updated file', f, file_name=os.path.basename(new_file_path))
                 print(f"Please open the file manually: {new_file_path}")
-        timeout = 60  # seconds, adjust as needed
+        timeout = 180  # seconds, adjust as needed
         start = time.time()
         print(f"Opened {new_file_path}. Please save & close Excel, or press Enter here when done. Waiting up to {timeout}s...")
 
@@ -353,3 +353,4 @@ class BudgetToActualUpdater:
 
         # Now run the updater (safe to assume file has been saved)
         updater.update_forecast_to_values(new_file_path)
+
