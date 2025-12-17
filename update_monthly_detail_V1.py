@@ -209,7 +209,7 @@ if __name__ == "__main__":
     month = datetime(2025, 11, 30)
 
     # Path to the original Excel file
-    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\IA_FFM_2025.xlsx'
+    original_file_path = r'C:\Users\jorda\OneDrive\Documents\GitHub\finevalgroup\EI_Annual_2026.xlsx'
 
     # Initialize the processor
     processor = ExcelProcessor(original_file_path)
